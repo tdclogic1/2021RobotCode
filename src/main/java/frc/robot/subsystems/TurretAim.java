@@ -17,7 +17,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+
 import oi.limelightvision.limelight.frc.LimeLight;
 
 /**
@@ -27,7 +31,9 @@ import oi.limelightvision.limelight.frc.LimeLight;
 public class TurretAim extends SubsystemBase {
 
     private LimeLight limeLight1;
-    private WPI_TalonSRX motorTurretTurn;
+    private TalonSRX motorTurretTurn;
+    private VictorSPX motorAgitator;
+    private VictorSPX motorIndexer;
 
     /**
     *
@@ -50,6 +56,11 @@ public class TurretAim extends SubsystemBase {
         motorTurretTurn.configNominalOutputReverse(0, 30);
         motorTurretTurn.configPeakOutputForward(1, 30);
         motorTurretTurn.configPeakOutputReverse(-1, 30);
+
+        motorAgitator = new WPI_VictorSPX(7);
+
+        motorIndexer = new WPI_VictorSPX(9);
+
 
     }
 

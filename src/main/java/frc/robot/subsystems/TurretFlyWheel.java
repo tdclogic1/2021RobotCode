@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -23,33 +25,26 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 /**
  *
  */
-public class TurretShoot extends SubsystemBase {
+public class TurretFlyWheel extends SubsystemBase {
 
-    private WPI_TalonFX motorLeftFalcon;
-    private WPI_TalonFX motorRightFlacon;
-    private SpeedControllerGroup flyWheel;
-    private WPI_VictorSPX motorAgitator;
-    private WPI_VictorSPX motorIndexer;
+    private TalonFX motorFlyWheelMaster;
+    private TalonFX motorFlyWheelSlave;
+ 
 
     /**
     *
     */
-    public TurretShoot() {
+    public TurretFlyWheel() {
 
-        motorLeftFalcon = new WPI_TalonFX(12);
-        motorLeftFalcon.configFactoryDefault();
-        motorLeftFalcon.setInverted(true);
+        motorFlyWheelMaster = new WPI_TalonFX(12);
+        motorFlyWheelMaster.configFactoryDefault();
+        motorFlyWheelMaster.setInverted(true);
 
-        motorRightFlacon = new WPI_TalonFX(3);
-        motorRightFlacon.configFactoryDefault();
+        motorFlyWheelSlave = new WPI_TalonFX(3);
+        motorFlyWheelSlave.configFactoryDefault();
+        motorFlyWheelSlave.follow(motorFlyWheelMaster);
 
-        SpeedControllerGroup flyWheel = new SpeedControllerGroup(motorLeftFalcon, motorRightFlacon);
-        addChild("FlyWheel", flyWheel);
-
-        motorAgitator = new WPI_VictorSPX(7);
-
-        motorIndexer = new WPI_VictorSPX(9);
-
+         
     }
 
     @Override
@@ -68,13 +63,6 @@ public class TurretShoot extends SubsystemBase {
     // here. Call these from Commands.
 
     public void my_FlyWheelRun(double speed) {
-        SmartDashboard.putNumber("Flywheel Speed", speed);
-        motorLeftFalcon.set(speed);
-        motorRightFlacon.set(speed);
-        if (speed > .2) {
-            motorIndexer.set(.75);
-        } else {
-            motorIndexer.set(.0);
-        }
+        motorFlyWheelMaster.set(ControlMode.PercentOutput, speed); //(speed);
     }
 }
