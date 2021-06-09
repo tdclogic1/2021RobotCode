@@ -32,8 +32,6 @@ public class TurretAim extends SubsystemBase {
 
     private LimeLight limeLight1;
     private TalonSRX motorTurretTurn;
-    private VictorSPX motorAgitator;
-    private VictorSPX motorIndexer;
 
     /**
     *
@@ -56,11 +54,6 @@ public class TurretAim extends SubsystemBase {
         motorTurretTurn.configNominalOutputReverse(0, 30);
         motorTurretTurn.configPeakOutputForward(1, 30);
         motorTurretTurn.configPeakOutputReverse(-1, 30);
-
-        motorAgitator = new WPI_VictorSPX(7);
-
-        motorIndexer = new WPI_VictorSPX(9);
-
 
     }
 

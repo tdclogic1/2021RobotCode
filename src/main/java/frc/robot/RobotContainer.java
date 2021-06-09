@@ -17,15 +17,11 @@ import frc.robot.util.XboxControllerAxisButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-
-
-
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -36,81 +32,81 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   /**
-  * Declare Driver Buttons
-  */
- private JoystickButton a_xBox_Driver;
- private JoystickButton b_xBox_Driver;
- private JoystickButton x_xBox_Driver;
- private JoystickButton y_xBox_Driver;
- private JoystickButton lb_xBox_Driver;
- private JoystickButton rb_xBox_Driver;
- private JoystickButton r_Stick_Button_xbox_Driver;
- private JoystickButton l_Stick_Button_xbox_Driver;
- private JoystickButton start_xBox_Driver;
- private JoystickButton reset_xBox_Driver;
-  
- private XboxControllerAxisButton rt_xBox_Driver;
- private XboxControllerAxisButton lt_xBox_Driver;
-  
- private JoystickPOVButton povNorth_xBox_Driver;
- private JoystickPOVButton povNorthEast_xBox_Driver;
- private JoystickPOVButton povNorthWest_xBox_Driver;
- private JoystickPOVButton povSouth_xBox_Driver;
- private JoystickPOVButton povSouthEast_xBox_Driver;
- private JoystickPOVButton povSouthWest_xBox_Driver;
- private JoystickPOVButton povWest_xBox_Driver;
- private JoystickPOVButton povEast_xBox_Driver;
- 
- /**
-  * Declare CoDriver Buttons
-  */
- private JoystickButton a_xBox_CoDriver;
- private JoystickButton b_xBox_CoDriver;
- private JoystickButton x_xBox_CoDriver;
- private JoystickButton y_xBox_CoDriver;
- private JoystickButton lb_xBox_CoDriver;
- private JoystickButton rb_xBox_CoDriver;
- private JoystickButton r_Stick_Button_xbox_CoDriver;
- private XboxControllerAxisButton rJoystickUpDown_CoDriver;
- private JoystickButton l_Stick_Button_xbox_CoDriver;
- private XboxControllerAxisButton lJoystickUpDown_CoDriver;
- private JoystickButton start_xBox_CoDriver;
- private JoystickButton reset_xBox_CoDriver;
- private JoystickButton lsb_xBox_CoDriver;
+   * Declare Driver Buttons
+   */
+  private JoystickButton a_xBox_Driver;
+  private JoystickButton b_xBox_Driver;
+  private JoystickButton x_xBox_Driver;
+  private JoystickButton y_xBox_Driver;
+  private JoystickButton lb_xBox_Driver;
+  private JoystickButton rb_xBox_Driver;
+  private JoystickButton r_Stick_Button_xbox_Driver;
+  private JoystickButton l_Stick_Button_xbox_Driver;
+  private JoystickButton start_xBox_Driver;
+  private JoystickButton reset_xBox_Driver;
 
- private XboxControllerAxisButton rt_xBox_CoDriver;
- private XboxControllerAxisButton lt_xBox_CoDriver;
+  private XboxControllerAxisButton rt_xBox_Driver;
+  private XboxControllerAxisButton lt_xBox_Driver;
 
- private JoystickPOVButton povNorth_xBox_CoDriver;
- private JoystickPOVButton povSouth_xBox_CoDriver;
- private JoystickPOVButton povWest_xBox_CoDriver;
- private JoystickPOVButton povEast_xBox_CoDriver;
+  private JoystickPOVButton povNorth_xBox_Driver;
+  private JoystickPOVButton povNorthEast_xBox_Driver;
+  private JoystickPOVButton povNorthWest_xBox_Driver;
+  private JoystickPOVButton povSouth_xBox_Driver;
+  private JoystickPOVButton povSouthEast_xBox_Driver;
+  private JoystickPOVButton povSouthWest_xBox_Driver;
+  private JoystickPOVButton povWest_xBox_Driver;
+  private JoystickPOVButton povEast_xBox_Driver;
 
+  /**
+   * Declare CoDriver Buttons
+   */
+  private JoystickButton a_xBox_CoDriver;
+  private JoystickButton b_xBox_CoDriver;
+  private JoystickButton x_xBox_CoDriver;
+  private JoystickButton y_xBox_CoDriver;
+  private JoystickButton lb_xBox_CoDriver;
+  private JoystickButton rb_xBox_CoDriver;
+  private JoystickButton r_Stick_Button_xbox_CoDriver;
+  private XboxControllerAxisButton rJoystickUpDown_CoDriver;
+  private JoystickButton l_Stick_Button_xbox_CoDriver;
+  private XboxControllerAxisButton lJoystickUpDown_CoDriver;
+  private JoystickButton start_xBox_CoDriver;
+  private JoystickButton reset_xBox_CoDriver;
+  private JoystickButton lsb_xBox_CoDriver;
 
+  private XboxControllerAxisButton rt_xBox_CoDriver;
+  private XboxControllerAxisButton lt_xBox_CoDriver;
 
- private JoystickButton btn1_launchPad;
- private JoystickButton btn2_launchPad;
- private JoystickButton btn3_launchPad;
- private JoystickButton btn4_launchPad;
- private JoystickButton btn5_launchPad;
- private JoystickButton btn6_launchPad;
- private JoystickButton btn7_launchPad;
- private JoystickButton btn8_launchPad;
- private JoystickButton btn9_launchPad;
- private JoystickButton btn10_launchPad;
- private JoystickButton btn11_launchPad;
-  
+  private JoystickPOVButton povNorth_xBox_CoDriver;
+  private JoystickPOVButton povSouth_xBox_CoDriver;
+  private JoystickPOVButton povWest_xBox_CoDriver;
+  private JoystickPOVButton povEast_xBox_CoDriver;
+
+  private JoystickButton btn1_launchPad;
+  private JoystickButton btn2_launchPad;
+  private JoystickButton btn3_launchPad;
+  private JoystickButton btn4_launchPad;
+  private JoystickButton btn5_launchPad;
+  private JoystickButton btn6_launchPad;
+  private JoystickButton btn7_launchPad;
+  private JoystickButton btn8_launchPad;
+  private JoystickButton btn9_launchPad;
+  private JoystickButton btn10_launchPad;
+  private JoystickButton btn11_launchPad;
+
   private static RobotContainer m_robotContainer = new RobotContainer();
 
   // The robot's subsystems
+  private final TurretFeed m_turretFeed = new TurretFeed();
   private final TurretAim m_turretAim = new TurretAim();
-  private final TurretFlyWheel m_TurretFlyWheel = new TurretFlyWheel();
+  private final FlyWheel m_FlyWheel = new FlyWheel();
   private final Intake m_intake = new Intake();
   private final DriveTrain m_driveTrain = new DriveTrain();
 
   // Joysticks
   private final XboxController coDriverControlls = new XboxController(1);
   private final XboxController driverControlls = new XboxController(0);
+  private final Joystick launchpad = new Joystick(2);
 
   // A chooser for autonomous commands
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -120,23 +116,12 @@ public class RobotContainer {
    */
   private RobotContainer() {
 
-    // Smartdashboard Subsystems
-
-    // SmartDashboard Buttons
-    SmartDashboard.putData("Autonomous Command", new AutonomousCommand());
-    SmartDashboard.putData("IntakeIntake", new IntakeIntake(m_intake));
-    SmartDashboard.putData("IntakeOutake", new IntakeOutake(m_intake));
-    SmartDashboard.putData("IntakeExtend", new IntakeExtend(m_intake));
-    SmartDashboard.putData("IntakeRetract", new IntakeRetract(m_intake));
-    SmartDashboard.putData("TurretTurn", new TurretTurn(m_turretAim));
-    // SmartDashboard.putData("Shoot", new Shoot( m_TurretFlyWheel ));
-
     // Configure the button bindings
     configureButtonBindings();
 
     // Configure default commands
     m_driveTrain.setDefaultCommand(new DriveWithJoystick(m_driveTrain, driverControlls));
-   
+
     // Configure autonomous sendable chooser
 
     m_chooser.setDefaultOption("Autonomous Command", new AutonomousCommand());
@@ -154,47 +139,44 @@ public class RobotContainer {
    * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {  
-
+  private void configureButtonBindings() {
 
     diverbuttons();
     codriverButtons();
     launchPadButtons();
     SmartDashboardButtons();
 
-    
-
   }
 
   private void diverbuttons() {
-    
-    rb_xBox_Driver = new JoystickButton(driverControlls,XboxController.Button.kBumperRight.value);
-    rb_xBox_Driver.whileHeld(new Shoot(m_TurretFlyWheel, driverControlls));
 
-    lt_xBox_Driver = new XboxControllerAxisButton(driverControlls,XboxController.Axis.kLeftTrigger);
+    rb_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kBumperRight.value);
+    rb_xBox_Driver.whileHeld(new FlyWheel_Run(m_FlyWheel, driverControlls));
+
+    lt_xBox_Driver = new XboxControllerAxisButton(driverControlls, XboxController.Axis.kLeftTrigger);
     // driverLeftTrigger.whenPressed(new IntakeRetract(m_intake), true);
-
 
     lb_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kBumperLeft.value);
     lb_xBox_Driver.whenPressed(new IntakeExtend(m_intake), true);
-    
+
   }
-
-
 
   private void codriverButtons() {
   }
 
-    
   private void launchPadButtons() {
   }
 
-
-
   private void SmartDashboardButtons() {
-    SmartDashboard.putData("Xbox Left Bumper", new IntakeExtend(m_intake));
-  }
 
+    SmartDashboard.putData("Autonomous Command", new AutonomousCommand());
+    SmartDashboard.putData("IntakeIntake", new IntakeIntake(m_intake));
+    SmartDashboard.putData("IntakeOutake", new IntakeOutake(m_intake));
+    SmartDashboard.putData("IntakeExtend", new IntakeExtend(m_intake));
+    SmartDashboard.putData("IntakeRetract", new IntakeRetract(m_intake));
+    SmartDashboard.putData("TurretTurn", new TurretTurn(m_turretAim));
+
+  }
 
   public XboxController getDriverControlls() {
     return driverControlls;

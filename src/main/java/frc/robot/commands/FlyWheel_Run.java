@@ -13,21 +13,21 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-import frc.robot.subsystems.TurretFlyWheel;
+import frc.robot.subsystems.FlyWheel;
 
 /**
  *
  */
-public class Shoot extends CommandBase {
+public class FlyWheel_Run extends CommandBase {
 
-    private final TurretFlyWheel m_TurretFlyWheel;
+    private final FlyWheel m_FlyWheel;
 
     private final XboxController m_controller;
 
-    public Shoot(TurretFlyWheel subsystem, XboxController controller) {
+    public FlyWheel_Run(FlyWheel subsystem, XboxController controller) {
 
-        m_TurretFlyWheel = subsystem;
-        addRequirements(m_TurretFlyWheel);
+        m_FlyWheel = subsystem;
+        addRequirements(m_FlyWheel);
 
         m_controller = controller;
     }
@@ -41,14 +41,14 @@ public class Shoot extends CommandBase {
     @Override
     public void execute() {
         double speed = m_controller.getRawAxis(3);
-        m_TurretFlyWheel.my_FlyWheelRun(speed);
+        m_FlyWheel.my_FlyWheelRun(speed);
 
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_TurretFlyWheel.my_FlyWheelRun(0.0);
+        m_FlyWheel.my_FlyWheelRun(0.0);
     }
 
     // Returns true when the command should end.

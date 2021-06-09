@@ -36,6 +36,15 @@ public class DriveTrain extends SubsystemBase {
     private DifferentialDrive differentialDrive1;
     private PigeonIMU pigeonIMU1;
 
+    private static final int kMaxNumberOfMotors = 2;
+    private WPI_TalonFX[] m_talons = new WPI_TalonFX[kMaxNumberOfMotors];
+
+    private PigeonIMU _pidgey = new PigeonIMU(0);
+    private double [] xyz_dps = new double [3];
+    private double currentAngle = 0;
+    private boolean angleIsGood = false;
+    private double currentAngularRate = xyz_dps[2];
+
     /**
     *
     */
@@ -65,7 +74,7 @@ public class DriveTrain extends SubsystemBase {
         differentialDrive1.setExpiration(0.1);
         differentialDrive1.setMaxOutput(1.0);
 
-        pigeonIMU1 = new PigeonIMU(6);
+  
 
         differentialDrive1.setDeadband(.1);
     }

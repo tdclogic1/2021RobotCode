@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 /**
  *
  */
-public class TurretFlyWheel extends SubsystemBase {
+public class FlyWheel extends SubsystemBase {
 
     private TalonFX motorFlyWheelMaster;
     private TalonFX motorFlyWheelSlave;
@@ -34,7 +34,7 @@ public class TurretFlyWheel extends SubsystemBase {
     /**
     *
     */
-    public TurretFlyWheel() {
+    public FlyWheel() {
 
         motorFlyWheelMaster = new WPI_TalonFX(12);
         motorFlyWheelMaster.configFactoryDefault();
