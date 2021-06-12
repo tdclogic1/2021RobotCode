@@ -24,4 +24,12 @@ public class TurretFeed extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
   }
+
+public void my_IndexerRun(double speed) {
+  motorIndexer.set(speed);
+}
+
+public void my_AgitatorRun(double speed) {
+  motorAgitator.set(speed);
+}
 }

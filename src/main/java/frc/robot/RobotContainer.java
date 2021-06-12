@@ -183,7 +183,7 @@ public class RobotContainer {
     start_xBox_Driver.whileHeld(new FlyWheel_Velocity(m_FlyWheel, () -> SmartDashboard.getNumber("Fly Wheel", 0)));
 
     reset_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kBack.value);
-    // reset_xBox_Driver;
+    reset_xBox_Driver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed));
 
     rt_xBox_Driver = new XboxControllerAxisButton(driverControlls, XboxController.Axis.kRightTrigger);
     // rt_xBox_Driver;
@@ -192,7 +192,7 @@ public class RobotContainer {
     // lt_xBox_Driver;
 
     povNorth_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.NORTH);
-    //povNorth_xBox_Driver
+    povNorth_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_turretAim,() -> 180 ));
 
     povNorthEast_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.NORTHEAST);
     // povNorthEast_xBox_Driver;
@@ -201,7 +201,7 @@ public class RobotContainer {
     // povNorthWest_xBox_Driver;
 
     povSouth_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.SOUTH);
-    // povSouth_xBox_Driver;
+    povSouth_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_turretAim, () -> 0 ));
 
     povSouthEast_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.SOUTHEAST);
     // povSouthEast_xBox_Driver;
@@ -286,6 +286,7 @@ public class RobotContainer {
   private void SmartDashboardButtons() {
 
     SmartDashboard.putNumber("Fly Wheel", 5000);
+    SmartDashboard.putData("Reset Turt Pos", new Turret_Reset_Pos(m_turretAim));
 
     SmartDashboard.putData("Autonomous Command", new AutonomousCommand());
     SmartDashboard.putData("IntakeIntake", new IntakeIntake(m_intake));

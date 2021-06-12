@@ -10,10 +10,14 @@
 
 package frc.robot.subsystems;
 
+import frc.robot.Constants;
 import frc.robot.commands.*;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
@@ -31,7 +35,11 @@ import oi.limelightvision.limelight.frc.LimeLight;
 public class TurretAim extends SubsystemBase {
 
     private LimeLight limeLight1;
-    private TalonSRX motorTurretTurn;
+    private TalonSRX _talon;
+    private final double ENCODER_COUNTS_PER_DEG = 905;
+    private final double maxDegTravle = 255;
+    private final double minTarget = -35;
+    private final double maxTarget = minTarget + maxDegTravle;
 
     /**
     *
@@ -40,26 +48,56 @@ public class TurretAim extends SubsystemBase {
 
         limeLight1 = new LimeLight("limelight");
 
-        motorTurretTurn = new WPI_TalonSRX(8);
+        _talon = new WPI_TalonSRX(5);
 
         /* Factory default hardware to prevent unexpected behavior */
-        motorTurretTurn.configFactoryDefault();
+        _talon.configFactoryDefault();
+
+        /* Configure Sensor Source for Pirmary PID */
+        _talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx,
+                Constants.kTimeoutMs);
+
+        /*
+         * set deadband to super small 0.001 (0.1 %). The default deadband is 0.04 (4 %)
+         */
+        _talon.configNeutralDeadband(0.001, Constants.kTimeoutMs);
 
         /* Invert Motor? and set Break Mode */
-        motorTurretTurn.setInverted(false);
-        motorTurretTurn.setNeutralMode(NeutralMode.Coast);
+        _talon.setSensorPhase(false);
+        _talon.setInverted(true);
+
+        _talon.setNeutralMode(NeutralMode.Coast);
+
+        /* Set relevant frame periods to be at least as fast as periodic rate */
+        _talon.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.kTimeoutMs);
+        _talon.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
 
         /* Set the peak and nominal outputs */
-        motorTurretTurn.configNominalOutputForward(0, 30);
-        motorTurretTurn.configNominalOutputReverse(0, 30);
-        motorTurretTurn.configPeakOutputForward(1, 30);
-        motorTurretTurn.configPeakOutputReverse(-1, 30);
+        _talon.configNominalOutputForward(0, Constants.kTimeoutMs);
+        _talon.configNominalOutputReverse(0, Constants.kTimeoutMs);
+        _talon.configPeakOutputForward(.5, Constants.kTimeoutMs);
+        _talon.configPeakOutputReverse(-.5, Constants.kTimeoutMs);
+
+        /* Set Motion Magic gains in slot0 - see documentation */
+        _talon.selectProfileSlot(Constants.kSlotIdx, Constants.kPIDLoopIdx);
+        _talon.config_kF(Constants.kSlotIdx, .009, Constants.kTimeoutMs);
+        _talon.config_kP(Constants.kSlotIdx, .09, Constants.kTimeoutMs);
+        _talon.config_kI(Constants.kSlotIdx, 0, Constants.kTimeoutMs);
+        _talon.config_kD(Constants.kSlotIdx, 0, Constants.kTimeoutMs);
+
+        /* Set acceleration and vcruise velocity - see documentation */
+        _talon.configMotionCruiseVelocity(54520, Constants.kTimeoutMs);
+        _talon.configMotionAcceleration(181733, Constants.kTimeoutMs);
+
+        /* Zero the sensor once on robot boot up */
+        _talon.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
 
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        SmartDashboard.putNumber("Turret Current Pos", get_currentPos());
 
     }
 
@@ -71,5 +109,40 @@ public class TurretAim extends SubsystemBase {
 
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
+
+    public void my_Aim_PercentOutput(double percentOutput) {
+        _talon.set(ControlMode.PercentOutput, percentOutput);
+    }
+
+    public void my_Aim_MotoionMagic(double targetPosDeg) {
+
+        
+        double targetPos = clampTargetPos(targetPosDeg ) * ENCODER_COUNTS_PER_DEG;
+        DriverStation.reportError("Aim Motion Magic targetPos - " + targetPos , false);
+        _talon.set(ControlMode.MotionMagic, targetPos);
+
+    }
+
+    private double clampTargetPos(double pos) {
+        if (pos > maxTarget) {
+            return maxTarget;
+        } else if (pos < minTarget) {
+            return minTarget;
+        } else {
+            return pos;
+        }
+    }
+
+    public void my_SetPos(double sensorPos) {
+        _talon.setSelectedSensorPosition(sensorPos);
+    }
+
+    public void my_SetPos() {
+        _talon.setSelectedSensorPosition(minTarget * ENCODER_COUNTS_PER_DEG);
+    }
+
+    private double get_currentPos() {
+        return _talon.getSelectedSensorPosition(0) / ENCODER_COUNTS_PER_DEG;
+    }
 
 }

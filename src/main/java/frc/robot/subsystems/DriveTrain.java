@@ -77,6 +77,7 @@ public class DriveTrain extends SubsystemBase {
   
 
         differentialDrive1.setDeadband(.1);
+        differentialDrive1.setSafetyEnabled(false);
     }
 
     @Override
