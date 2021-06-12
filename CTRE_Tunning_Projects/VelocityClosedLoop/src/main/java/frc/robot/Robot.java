@@ -54,7 +54,10 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;;
 
 public class Robot extends TimedRobot {
     /* Hardware */
-	TalonFX _talon = new TalonFX(1);
+
+	TalonFX  motorFlyWheelMaster = new TalonFX(12);
+	TalonFX motorFlyWheelSlave = new TalonFX(3);
+       
     Joystick _joy = new Joystick(0);
     
     /* String for output */
@@ -65,28 +68,37 @@ public class Robot extends TimedRobot {
 
 	public void robotInit() {
         /* Factory Default all hardware to prevent unexpected behaviour */
-		_talon.configFactoryDefault();
+		motorFlyWheelMaster.configFactoryDefault();
+		motorFlyWheelSlave.configFactoryDefault();
+
+		/* Invert if required */
+		motorFlyWheelMaster.setInverted(true);
+		motorFlyWheelSlave.setInverted(false);
+
+		/* Set Slave to Follow Master */
+		motorFlyWheelSlave.follow(motorFlyWheelMaster);
 		
 		/* Config neutral deadband to be the smallest possible */
-		_talon.configNeutralDeadband(0.001);
+		motorFlyWheelMaster.configNeutralDeadband(0.001);
 
 		/* Config sensor used for Primary PID [Velocity] */
-        _talon.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
+        motorFlyWheelMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
                                             Constants.kPIDLoopIdx, 
 											Constants.kTimeoutMs);
 											
+											
 
 		/* Config the peak and nominal outputs */
-		_talon.configNominalOutputForward(0, Constants.kTimeoutMs);
-		_talon.configNominalOutputReverse(0, Constants.kTimeoutMs);
-		_talon.configPeakOutputForward(1, Constants.kTimeoutMs);
-		_talon.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+		motorFlyWheelMaster.configNominalOutputForward(0, Constants.kTimeoutMs);
+		motorFlyWheelMaster.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		motorFlyWheelMaster.configPeakOutputForward(1, Constants.kTimeoutMs);
+		motorFlyWheelMaster.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
 		/* Config the Velocity closed loop gains in slot0 */
-		_talon.config_kF(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kF, Constants.kTimeoutMs);
-		_talon.config_kP(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kP, Constants.kTimeoutMs);
-		_talon.config_kI(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kI, Constants.kTimeoutMs);
-		_talon.config_kD(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kD, Constants.kTimeoutMs);
+		motorFlyWheelMaster.config_kF(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kF, Constants.kTimeoutMs);
+		motorFlyWheelMaster.config_kP(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kP, Constants.kTimeoutMs);
+		motorFlyWheelMaster.config_kI(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kI, Constants.kTimeoutMs);
+		motorFlyWheelMaster.config_kD(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kD, Constants.kTimeoutMs);
 		/*
 		 * Talon FX does not need sensor phase set for its integrated sensor
 		 * This is because it will always be correct if the selected feedback device is integrated sensor (default value)
@@ -94,7 +106,7 @@ public class Robot extends TimedRobot {
 		 * 
 		 * https://phoenix-documentation.readthedocs.io/en/latest/ch14_MCSensor.html#sensor-phase
 		 */
-        // _talon.setSensorPhase(true);
+        // motorFlyWheelMaster.setSensorPhase(true);
 	}
 
 	/**
@@ -105,7 +117,7 @@ public class Robot extends TimedRobot {
 		double leftYstick = -1 * _joy.getY();
 
 		/* Get Talon/Victor's current output percentage */
-		double motorOutput = _talon.getMotorOutputPercent();
+		double motorOutput = motorFlyWheelMaster.getMotorOutputPercent();
 		
 		/* Prepare line to print */
 		_sb.append("\tout:");
@@ -114,7 +126,7 @@ public class Robot extends TimedRobot {
 		_sb.append("%");	// Percent
 
 		_sb.append("\tspd:");
-		_sb.append(_talon.getSelectedSensorVelocity(Constants.kPIDLoopIdx));
+		_sb.append(motorFlyWheelMaster.getSelectedSensorVelocity(Constants.kPIDLoopIdx));
 		_sb.append("u"); 	// Native units
 
         /** 
@@ -129,19 +141,24 @@ public class Robot extends TimedRobot {
 			 * 2048 Units/Rev * 500 RPM / 600 100ms/min in either direction:
 			 * velocity setpoint is in units/100ms
 			 */
-			double targetVelocity_UnitsPer100ms = leftYstick * 2000.0 * 2048.0 / 600.0;
+			double maxRPM = 6380;
+			double setpoint = leftYstick;
+			double velocityUnitsper100ms = 2048.0 / 600.0;
+			double targetVelocity_UnitsPer100ms = setpoint * maxRPM * velocityUnitsper100ms;
+
+			
 			/* 500 RPM in either direction */
-			_talon.set(TalonFXControlMode.Velocity, targetVelocity_UnitsPer100ms);
+			motorFlyWheelMaster.set(TalonFXControlMode.Velocity, targetVelocity_UnitsPer100ms);
 
 			/* Append more signals to print when in speed mode. */
 			_sb.append("\terr:");
-			_sb.append(_talon.getClosedLoopError(Constants.kPIDLoopIdx));
+			_sb.append(motorFlyWheelMaster.getClosedLoopError(Constants.kPIDLoopIdx));
 			_sb.append("\ttrg:");
 			_sb.append(targetVelocity_UnitsPer100ms);
 		} else {
 			/* Percent Output */
 
-			_talon.set(TalonFXControlMode.PercentOutput, leftYstick);
+			motorFlyWheelMaster.set(TalonFXControlMode.PercentOutput, leftYstick);
 		}
 
         /* Print built string every 10 loops */
