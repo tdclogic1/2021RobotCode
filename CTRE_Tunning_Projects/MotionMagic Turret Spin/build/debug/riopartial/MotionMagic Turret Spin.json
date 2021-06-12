@@ -1,0 +1,9 @@
+[
+  {
+    "artifact": "frcJava (in project MotionMagic Turret Spin)",
+    "target": "roborio",
+    "debugfile": "frcJava_roborio.debugconfig",
+    "project": "MotionMagic Turret Spin",
+    "language": "java"
+  }
+]

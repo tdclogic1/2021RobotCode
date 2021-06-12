@@ -12,7 +12,7 @@ public class Constants {
 	public static final int kSlotIdx = 0;
 
 	/**
-	 * Talon FX supports multiple (cascaded) PID loops. For
+	 * Talon SRX/ Victor SPX will supported multiple (cascaded) PID loops. For
 	 * now we just want the primary one.
 	 */
 	public static final int kPIDLoopIdx = 0;
