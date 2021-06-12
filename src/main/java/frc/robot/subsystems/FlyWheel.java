@@ -12,11 +12,14 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.*;
+import frc.robot.util.Gains;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
@@ -29,22 +32,62 @@ public class FlyWheel extends SubsystemBase {
 
     private TalonFX motorFlyWheelMaster;
     private TalonFX motorFlyWheelSlave;
- 
 
+    private static final int kSlotIdx = 0;
+    private static final int kTimeoutMs = 30;
+    private static final int kPIDLoopIdx = 0;
+    private final static Gains kGains_Velocit  = new Gains( 0.1, 0.001, 5, 1023.0/20660.0,  300,  1.00);
+
+    private double maxRPM = 6380;
+	private	double velocityUnitsper100ms = 2048.0 / 600.0;
+	
     /**
     *
     */
     public FlyWheel() {
 
-        motorFlyWheelMaster = new WPI_TalonFX(12);
-        motorFlyWheelMaster.configFactoryDefault();
-        motorFlyWheelMaster.setInverted(true);
+        motorFlyWheelMaster = new TalonFX(12);
+        motorFlyWheelSlave = new TalonFX(3);
 
-        motorFlyWheelSlave = new WPI_TalonFX(3);
+        /* Factory Default all hardware to prevent unexpected behaviour */
+        motorFlyWheelMaster.configFactoryDefault();
         motorFlyWheelSlave.configFactoryDefault();
+
+        /* Invert if required */
+        motorFlyWheelMaster.setInverted(true);
+        motorFlyWheelSlave.setInverted(false);
+
+        /* Set Slave to Follow Master */
         motorFlyWheelSlave.follow(motorFlyWheelMaster);
 
-         
+        /* Config neutral deadband to be the smallest possible */
+        motorFlyWheelMaster.configNeutralDeadband(0.001);
+
+        /* Config sensor used for Primary PID [Velocity] */
+        motorFlyWheelMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, kPIDLoopIdx,
+                kTimeoutMs);
+
+        /* Config the peak and nominal outputs */
+        motorFlyWheelMaster.configNominalOutputForward(0, kTimeoutMs);
+        motorFlyWheelMaster.configNominalOutputReverse(0, kTimeoutMs);
+        motorFlyWheelMaster.configPeakOutputForward(1, kTimeoutMs);
+        motorFlyWheelMaster.configPeakOutputReverse(-1, kTimeoutMs);
+
+        /* Config the Velocity closed loop gains in slot0 */
+        motorFlyWheelMaster.config_kF(kPIDLoopIdx, kGains_Velocit.kF, kTimeoutMs);
+        motorFlyWheelMaster.config_kP(kPIDLoopIdx, kGains_Velocit.kP, kTimeoutMs);
+        motorFlyWheelMaster.config_kI(kPIDLoopIdx, kGains_Velocit.kI, kTimeoutMs);
+        motorFlyWheelMaster.config_kD(kPIDLoopIdx, kGains_Velocit.kD, kTimeoutMs);
+        /*
+         * Talon FX does not need sensor phase set for its integrated sensor This is
+         * because it will always be correct if the selected feedback device is
+         * integrated sensor (default value) and the user calls getSelectedSensor* to
+         * get the sensor's position/velocity.
+         * 
+         * https://phoenix-documentation.readthedocs.io/en/latest/ch14_MCSensor.html#
+         * sensor-phase
+         */
+
     }
 
     @Override
@@ -62,7 +105,11 @@ public class FlyWheel extends SubsystemBase {
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
-    public void my_FlyWheelRun(double speed) {
-        motorFlyWheelMaster.set(ControlMode.PercentOutput, speed); //(speed);
+    public void my_FlyWheelPercentOutput(double speed) {
+        motorFlyWheelMaster.set(ControlMode.PercentOutput, speed); // (speed);
+    }
+
+    public void my_FlyWheelVelocity(double rpm){
+        motorFlyWheelMaster.set(TalonFXControlMode.Velocity, rpm * maxRPM * velocityUnitsper100ms);
     }
 }

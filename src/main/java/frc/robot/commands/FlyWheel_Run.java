@@ -41,14 +41,14 @@ public class FlyWheel_Run extends CommandBase {
     @Override
     public void execute() {
         double speed = m_controller.getRawAxis(3);
-        m_FlyWheel.my_FlyWheelRun(speed);
+        m_FlyWheel.my_FlyWheelPercentOutput(speed);
 
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_FlyWheel.my_FlyWheelRun(0.0);
+        m_FlyWheel.my_FlyWheelPercentOutput(0.0);
     }
 
     // Returns true when the command should end.
