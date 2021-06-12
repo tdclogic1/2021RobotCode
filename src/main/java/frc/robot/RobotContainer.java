@@ -163,16 +163,15 @@ public class RobotContainer {
 
     x_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kX.value);
     x_xBox_Driver.whileHeld(new IntakePowercell(m_intake), true);
-    ;
 
     y_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kY.value);
     y_xBox_Driver.whileHeld(new IntakeEjectPowercell(m_intake), true);
 
     lb_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kBumperLeft.value);
-    lb_xBox_Driver.whenPressed(new IntakeExtend(m_intake), true);
+    //lb_xBox_Driver.whenPressed(new IntakeExtend(m_intake), true);
 
     rb_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kBumperRight.value);
-    rb_xBox_Driver.whileHeld(new FlyWheel_Run(m_FlyWheel, driverControlls));
+    //rb_xBox_Driver.whileHeld(new FlyWheel_Run(m_FlyWheel, driverControlls));
 
     r_Stick_Button_xbox_Driver = new JoystickButton(driverControlls, XboxController.Button.kStickRight.value);
     // r_Stick_Button_xbox_Driver;
@@ -181,7 +180,7 @@ public class RobotContainer {
     // l_Stick_Button_xbox_Driver;
 
     start_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kStart.value);
-    // start_xBox_Driver;
+    start_xBox_Driver.whileHeld(new FlyWheel_Velocity(m_FlyWheel, () -> SmartDashboard.getNumber("Fly Wheel", 0)));
 
     reset_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kBack.value);
     // reset_xBox_Driver;
@@ -193,7 +192,7 @@ public class RobotContainer {
     // lt_xBox_Driver;
 
     povNorth_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.NORTH);
-    // povNorth_xBox_Driver;
+    //povNorth_xBox_Driver
 
     povNorthEast_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.NORTHEAST);
     // povNorthEast_xBox_Driver;
@@ -221,23 +220,22 @@ public class RobotContainer {
   private void codriverButtons() {
 
     a_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kA.value);
-    a_xBox_CoDriver.whenPressed(new IntakeExtend(m_intake), true);
+    //a_xBox_CoDriver.whenPressed(new IntakeExtend(m_intake), true);
 
     b_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kB.value);
-    b_xBox_CoDriver.whenPressed(new IntakeRetract(m_intake), false);
+    //b_xBox_CoDriver.whenPressed(new IntakeRetract(m_intake), false);
 
     x_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kX.value);
-    x_xBox_CoDriver.whileHeld(new IntakePowercell(m_intake), true);
-    ;
+    //x_xBox_CoDriver.whileHeld(new IntakePowercell(m_intake), true);
 
     y_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kY.value);
-    y_xBox_CoDriver.whileHeld(new IntakeEjectPowercell(m_intake), true);
+    //y_xBox_CoDriver.whileHeld(new IntakeEjectPowercell(m_intake), true);
 
     lb_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kBumperLeft.value);
-    lb_xBox_CoDriver.whenPressed(new IntakeExtend(m_intake), true);
+    //lb_xBox_CoDriver.whileHeld(new FlyWheel_Velocity(m_FlyWheel, () -> 4000));
 
     rb_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kBumperRight.value);
-    rb_xBox_CoDriver.whileHeld(new FlyWheel_Run(m_FlyWheel, coDriverControlls));
+    //rb_xBox_CoDriver.whileHeld(new FlyWheel_Run(m_FlyWheel, coDriverControlls));
 
     r_Stick_Button_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kStickRight.value);
     // r_Stick_Button_xBox_CoDriver;
@@ -257,8 +255,8 @@ public class RobotContainer {
     lt_xBox_CoDriver = new XboxControllerAxisButton(coDriverControlls, XboxController.Axis.kLeftTrigger);
     // lt_xBox_CoDriver;
 
-    povNorth_xBox_CoDriver = new XboxPOVButton(coDriverControlls, XboxPOVButton.NORTH);
-    // povNorth_xBox_CoDriver;
+    povNorth_xBox_CoDriver = new XboxPOVButton(coDriverControlls, 0);
+    //povNorth_xBox_CoDriver.whileHeld(new FlyWheel_Velocity(m_FlyWheel, () -> 4000));
 
     povNorthEast_xBox_CoDriver = new XboxPOVButton(coDriverControlls, XboxPOVButton.NORTHEAST);
     // povNorthEast_xBox_CoDriver;
@@ -286,6 +284,8 @@ public class RobotContainer {
   }
 
   private void SmartDashboardButtons() {
+
+    SmartDashboard.putNumber("Fly Wheel", 5000);
 
     SmartDashboard.putData("Autonomous Command", new AutonomousCommand());
     SmartDashboard.putData("IntakeIntake", new IntakeIntake(m_intake));
