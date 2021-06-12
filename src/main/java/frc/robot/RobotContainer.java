@@ -125,7 +125,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Configure default commands
-    m_driveTrain.setDefaultCommand(new DriveWithJoystick(m_driveTrain, driverControlls));
+    //m_driveTrain.setDefaultCommand(new DriveWithJoystick(m_driveTrain, driverControlls));
 
     // Configure autonomous sendable chooser
 
