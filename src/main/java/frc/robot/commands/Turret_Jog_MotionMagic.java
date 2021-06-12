@@ -4,41 +4,29 @@
 
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.TurretAim_MM;
 
-public class Turret_To_Setpoint_MotionMagic extends CommandBase {
+public class Turret_Jog_MotionMagic extends CommandBase {
   private final TurretAim_MM m_TurretAim_MM;
-  private final DoubleSupplier m_setpoint;
-
-  /** Creates a new Turrent_To_Setpoint_MotionMagic. */
-  public Turret_To_Setpoint_MotionMagic(TurretAim_MM subsystem, DoubleSupplier setpoint) {
-
+  /** Creates a new Turret_Jog_MotionMagic. */
+  public Turret_Jog_MotionMagic(TurretAim_MM subsystem) {
+    // Use addRequirements() here to declare subsystem dependencies.
     m_TurretAim_MM = subsystem;
     addRequirements(m_TurretAim_MM);
-    m_setpoint = setpoint;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    m_TurretAim_MM.my_Aim_MotoionMagic(m_setpoint.getAsDouble());
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    m_TurretAim_MM.my_Aim_PercentOutput(0.0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override

@@ -9,19 +9,19 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.FlyWheel;
+import frc.robot.subsystems.FlyWheel_Vel_PID;
 
 public class FlyWheel_Velocity extends CommandBase {
 
-  private final FlyWheel m_FlyWheel;
+  private final FlyWheel_Vel_PID m_FlyWheel_Vel_PID;
 
   private final DoubleSupplier m_Setpoint;
 
-  /** Creates a new FlyWheel_Velocity. */
-  public FlyWheel_Velocity(FlyWheel subsystem, DoubleSupplier setpoint) {
+  /** Creates a new FlyWheel_Vel_PID_Velocity. */
+  public FlyWheel_Velocity(FlyWheel_Vel_PID subsystem, DoubleSupplier setpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_FlyWheel = subsystem;
-    addRequirements(m_FlyWheel);
+    m_FlyWheel_Vel_PID = subsystem;
+    addRequirements(m_FlyWheel_Vel_PID);
 
     m_Setpoint = setpoint;
   }
@@ -34,19 +34,19 @@ public class FlyWheel_Velocity extends CommandBase {
   @Override
   public void execute() {
     double rpm = m_Setpoint.getAsDouble();
-    m_FlyWheel.my_FlyWheelVelocity(rpm);
+    m_FlyWheel_Vel_PID.my_FlyWheel_Vel_PIDVelocity(rpm);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     if(interrupted){
-      DriverStation.reportError("FlyWheel Velocity Interupted", false);
+      DriverStation.reportError("FlyWheel_Vel_PID Velocity Interupted", false);
     }else{
-      DriverStation.reportError("FlyWheel Velocity Done", false);
+      DriverStation.reportError("FlyWheel_Vel_PID Velocity Done", false);
     }
    
-    m_FlyWheel.my_FlyWheelPercentOutput(0.0);
+    m_FlyWheel_Vel_PID.my_FlyWheel_Vel_PIDPercentOutput(0.0);
   }
 
   // Returns true when the command should end.

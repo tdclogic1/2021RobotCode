@@ -32,7 +32,7 @@ import oi.limelightvision.limelight.frc.LimeLight;
  *
  * 
  */
-public class TurretAim extends SubsystemBase {
+public class TurretAim_MM extends SubsystemBase {
 
     private LimeLight limeLight1;
     private TalonSRX _talon;
@@ -44,7 +44,7 @@ public class TurretAim extends SubsystemBase {
     /**
     *
     */
-    public TurretAim() {
+    public TurretAim_MM() {
 
         limeLight1 = new LimeLight("limelight");
 

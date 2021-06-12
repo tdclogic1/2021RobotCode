@@ -12,19 +12,19 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-import frc.robot.subsystems.TurretAim;
+import frc.robot.subsystems.TurretAim_MM;
 
 /**
  *
  */
 public class TurretTurn extends CommandBase {
 
-    private final TurretAim m_turretAim;
+    private final TurretAim_MM m_TurretAim_MM;
 
-    public TurretTurn(TurretAim subsystem) {
+    public TurretTurn(TurretAim_MM subsystem) {
 
-        m_turretAim = subsystem;
-        addRequirements(m_turretAim);
+        m_TurretAim_MM = subsystem;
+        addRequirements(m_TurretAim_MM);
 
     }
 

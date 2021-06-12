@@ -32,10 +32,10 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 /**
  *
  */
-public class FlyWheel extends SubsystemBase {
+public class FlyWheel_Vel_PID extends SubsystemBase {
 
-    private TalonFX motorFlyWheelMaster;
-    private TalonFX motorFlyWheelSlave;
+    private TalonFX motorFlyWheel_Vel_PIDMaster;
+    private TalonFX motorFlyWheel_Vel_PIDSlave;
 
     private static final int kTimeoutMs = 30;
     private static final int kPIDLoopIdx = 0;
@@ -56,50 +56,50 @@ public class FlyWheel extends SubsystemBase {
     /**
     *
     */
-    public FlyWheel() {
+    public FlyWheel_Vel_PID() {
 
-        motorFlyWheelMaster = new TalonFX(12);
-        motorFlyWheelSlave = new TalonFX(3);
+        motorFlyWheel_Vel_PIDMaster = new TalonFX(12);
+        motorFlyWheel_Vel_PIDSlave = new TalonFX(3);
 
         /* Factory Default all hardware to prevent unexpected behaviour */
-        motorFlyWheelMaster.configFactoryDefault();
-        motorFlyWheelSlave.configFactoryDefault();
+        motorFlyWheel_Vel_PIDMaster.configFactoryDefault();
+        motorFlyWheel_Vel_PIDSlave.configFactoryDefault();
 
         /*                                                               enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s)  */
-		motorFlyWheelMaster.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true,      20,                25,                1.0));
-        motorFlyWheelMaster.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,      10,                15,                0.5));
-        motorFlyWheelSlave.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true,      20,                25,                1.0));
-        motorFlyWheelSlave.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,      10,                15,                0.5));
+		motorFlyWheel_Vel_PIDMaster.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true,      20,                25,                1.0));
+        motorFlyWheel_Vel_PIDMaster.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,      10,                15,                0.5));
+        motorFlyWheel_Vel_PIDSlave.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true,      20,                25,                1.0));
+        motorFlyWheel_Vel_PIDSlave.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,      10,                15,                0.5));
 
 		/* Netural Mode override  */
-		motorFlyWheelMaster.setNeutralMode(NeutralMode.Coast); 
-        motorFlyWheelSlave.setNeutralMode(NeutralMode.Coast);
+		motorFlyWheel_Vel_PIDMaster.setNeutralMode(NeutralMode.Coast); 
+        motorFlyWheel_Vel_PIDSlave.setNeutralMode(NeutralMode.Coast);
 
         /* Invert if required */
-        motorFlyWheelMaster.setInverted(true);
-        motorFlyWheelSlave.setInverted(false);
+        motorFlyWheel_Vel_PIDMaster.setInverted(true);
+        motorFlyWheel_Vel_PIDSlave.setInverted(false);
 
         /* Set Slave to Follow Master */
-        motorFlyWheelSlave.follow(motorFlyWheelMaster);
+        motorFlyWheel_Vel_PIDSlave.follow(motorFlyWheel_Vel_PIDMaster);
 
         /* Config neutral deadband to be the smallest possible */
-        motorFlyWheelMaster.configNeutralDeadband(0.001);
+        motorFlyWheel_Vel_PIDMaster.configNeutralDeadband(0.001);
 
         /* Config sensor used for Primary PID [Velocity] */
-        motorFlyWheelMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, kPIDLoopIdx,
+        motorFlyWheel_Vel_PIDMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, kPIDLoopIdx,
                 kTimeoutMs);
 
         /* Config the peak and nominal outputs */
-        motorFlyWheelMaster.configNominalOutputForward(0, kTimeoutMs);
-        motorFlyWheelMaster.configNominalOutputReverse(0, kTimeoutMs);
-        motorFlyWheelMaster.configPeakOutputForward(1, kTimeoutMs);
-        motorFlyWheelMaster.configPeakOutputReverse(-1, kTimeoutMs);
+        motorFlyWheel_Vel_PIDMaster.configNominalOutputForward(0, kTimeoutMs);
+        motorFlyWheel_Vel_PIDMaster.configNominalOutputReverse(0, kTimeoutMs);
+        motorFlyWheel_Vel_PIDMaster.configPeakOutputForward(1, kTimeoutMs);
+        motorFlyWheel_Vel_PIDMaster.configPeakOutputReverse(-1, kTimeoutMs);
 
         /* Config the Velocity closed loop gains in slot0 */
-        motorFlyWheelMaster.config_kF(kPIDLoopIdx, 1023.0 / 20660.0, kTimeoutMs);
-        motorFlyWheelMaster.config_kP(kPIDLoopIdx, 0.001, kTimeoutMs);
-        motorFlyWheelMaster.config_kI(kPIDLoopIdx, 0, kTimeoutMs);
-        motorFlyWheelMaster.config_kD(kPIDLoopIdx, 0, kTimeoutMs);
+        motorFlyWheel_Vel_PIDMaster.config_kF(kPIDLoopIdx, 1023.0 / 20660.0, kTimeoutMs);
+        motorFlyWheel_Vel_PIDMaster.config_kP(kPIDLoopIdx, 0.001, kTimeoutMs);
+        motorFlyWheel_Vel_PIDMaster.config_kI(kPIDLoopIdx, 0, kTimeoutMs);
+        motorFlyWheel_Vel_PIDMaster.config_kD(kPIDLoopIdx, 0, kTimeoutMs);
         /*
          * Talon FX does not need sensor phase set for its integrated sensor This is
          * because it will always be correct if the selected feedback device is
@@ -127,13 +127,13 @@ public class FlyWheel extends SubsystemBase {
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
-    public void my_FlyWheelPercentOutput(double speed) {
-        motorFlyWheelMaster.set(ControlMode.PercentOutput, speed); // (speed);
+    public void my_FlyWheel_Vel_PIDPercentOutput(double speed) {
+        motorFlyWheel_Vel_PIDMaster.set(ControlMode.PercentOutput, speed); // (speed);
     }
 
-    public void my_FlyWheelVelocity(double rpm) {
+    public void my_FlyWheel_Vel_PIDVelocity(double rpm) {
         targetVelocity_UnitsPer100ms = rpm * velocityUnitsper100ms;
-        motorFlyWheelMaster.set(TalonFXControlMode.Velocity, targetVelocity_UnitsPer100ms);
+        motorFlyWheel_Vel_PIDMaster.set(TalonFXControlMode.Velocity, targetVelocity_UnitsPer100ms);
         diagnostics();
     }
 
@@ -143,7 +143,7 @@ public class FlyWheel extends SubsystemBase {
         if (++_loops >= 25) {
 
             /* Get Talon/Victor's current output percentage */
-            double motorOutput = motorFlyWheelMaster.getMotorOutputPercent();
+            double motorOutput = motorFlyWheel_Vel_PIDMaster.getMotorOutputPercent();
 
             /* Prepare line to print */
             _sb.append("\tout:");
@@ -152,11 +152,11 @@ public class FlyWheel extends SubsystemBase {
             _sb.append("%"); // Percent
 
             _sb.append("\tspd:");
-            _sb.append(motorFlyWheelMaster.getSelectedSensorVelocity(kPIDLoopIdx));
+            _sb.append(motorFlyWheel_Vel_PIDMaster.getSelectedSensorVelocity(kPIDLoopIdx));
             _sb.append("u"); // Native units
             /* Append more signals to print when in speed mode. */
             _sb.append("\terr:");
-            _sb.append(motorFlyWheelMaster.getClosedLoopError(kPIDLoopIdx));
+            _sb.append(motorFlyWheel_Vel_PIDMaster.getClosedLoopError(kPIDLoopIdx));
             _sb.append("\ttrg:");
             _sb.append(targetVelocity_UnitsPer100ms);
 

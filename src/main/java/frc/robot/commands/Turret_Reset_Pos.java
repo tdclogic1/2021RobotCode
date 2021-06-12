@@ -5,22 +5,22 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.TurretAim;
+import frc.robot.subsystems.TurretAim_MM;
 
 public class Turret_Reset_Pos extends CommandBase {
-  private final TurretAim m_turretAim;
+  private final TurretAim_MM m_TurretAim_MM;
 
   /** Creates a new Turret_Reset_Pos. */
-  public Turret_Reset_Pos(TurretAim subsystem) {
+  public Turret_Reset_Pos(TurretAim_MM subsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_turretAim = subsystem;
-    addRequirements(m_turretAim);
+    m_TurretAim_MM = subsystem;
+    addRequirements(m_TurretAim_MM);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_turretAim.my_SetPos();
+    m_TurretAim_MM.my_SetPos();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

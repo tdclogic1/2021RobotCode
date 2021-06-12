@@ -13,21 +13,21 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-import frc.robot.subsystems.FlyWheel;
+import frc.robot.subsystems.FlyWheel_Vel_PID;
 
 /**
  *
  */
 public class FlyWheel_Run extends CommandBase {
 
-    private final FlyWheel m_FlyWheel;
+    private final FlyWheel_Vel_PID m_FlyWheel_Vel_PID;
 
     private final XboxController m_controller;
 
-    public FlyWheel_Run(FlyWheel subsystem, XboxController controller) {
+    public FlyWheel_Run(FlyWheel_Vel_PID subsystem, XboxController controller) {
 
-        m_FlyWheel = subsystem;
-        addRequirements(m_FlyWheel);
+        m_FlyWheel_Vel_PID = subsystem;
+        addRequirements(m_FlyWheel_Vel_PID);
 
         m_controller = controller;
     }
@@ -41,14 +41,14 @@ public class FlyWheel_Run extends CommandBase {
     @Override
     public void execute() {
         double speed = m_controller.getRawAxis(3);
-        m_FlyWheel.my_FlyWheelPercentOutput(speed);
+        m_FlyWheel_Vel_PID.my_FlyWheel_Vel_PIDPercentOutput(speed);
 
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_FlyWheel.my_FlyWheelPercentOutput(0.0);
+        m_FlyWheel_Vel_PID.my_FlyWheel_Vel_PIDPercentOutput(0.0);
     }
 
     // Returns true when the command should end.

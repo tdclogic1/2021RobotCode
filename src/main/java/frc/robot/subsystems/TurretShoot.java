@@ -35,7 +35,7 @@ public class TurretShoot extends SubsystemBase {
     
 private WPI_TalonFX motorLeftFalcon;
 private WPI_TalonFX motorRightFlacon;
-private SpeedControllerGroup flyWheel;
+private SpeedControllerGroup FlyWheel_Vel_PID;
 private WPI_VictorSPX motorAgitator;
 private WPI_VictorSPX motorIndexer;
 
@@ -54,8 +54,8 @@ motorRightFlacon = new WPI_TalonFX(3);
  
  
 
-SpeedControllerGroup flyWheel = new SpeedControllerGroup(motorLeftFalcon, motorRightFlacon  );
- addChild("FlyWheel",flyWheel);
+SpeedControllerGroup FlyWheel_Vel_PID = new SpeedControllerGroup(motorLeftFalcon, motorRightFlacon  );
+ addChild("FlyWheel_Vel_PID",FlyWheel_Vel_PID);
  
 
 motorAgitator = new WPI_VictorSPX(5);
