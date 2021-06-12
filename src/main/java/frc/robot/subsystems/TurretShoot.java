@@ -8,36 +8,66 @@
 // update. Deleting the comments indicating the section will prevent
 // it from being updated in the future.
 
+
 package frc.robot.subsystems;
+
 
 import frc.robot.commands.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
+
+    
+
 
 /**
  *
  */
-public class Intake extends SubsystemBase {
+public class TurretShoot extends SubsystemBase {
+    
 
-    private DoubleSolenoid doubleSolenoid1;
-    private WPI_VictorSPX motor;
+    
 
+    
+private WPI_TalonFX motorLeftFalcon;
+private WPI_TalonFX motorRightFlacon;
+private SpeedControllerGroup flyWheel;
+private WPI_VictorSPX motorAgitator;
+private WPI_VictorSPX motorIndexer;
+
+    
+    
     /**
     *
     */
-    public Intake() {
+    public TurretShoot() {
+        
+motorLeftFalcon = new WPI_TalonFX(12);
+ 
+ 
 
-        doubleSolenoid1 = new DoubleSolenoid(0, 3, 2);
-        addChild("Double Solenoid 1", doubleSolenoid1);
+motorRightFlacon = new WPI_TalonFX(3);
+ 
+ 
 
-        motor = new WPI_VictorSPX(6);
+SpeedControllerGroup flyWheel = new SpeedControllerGroup(motorLeftFalcon, motorRightFlacon  );
+ addChild("FlyWheel",flyWheel);
+ 
 
+motorAgitator = new WPI_VictorSPX(5);
+ 
+ 
+
+motorIndexer = new WPI_VictorSPX(7);
+ 
+ 
+
+
+    
     }
 
     @Override
@@ -54,20 +84,6 @@ public class Intake extends SubsystemBase {
 
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
-    public void my_Extend() {
-        doubleSolenoid1.set(DoubleSolenoid.Value.kForward);
-    }
-
-    public void my_Retract() {
-        DriverStation.reportWarning("my_Retract()", false);
-        // DriverStation.reportWarning(DoubleSolenoid.Value.kReverse, false);
-        doubleSolenoid1.set(Value.kReverse);
-        SmartDashboard.putBoolean("doubleSolenoid1.isFwdSolenoidBlackListed()",
-                doubleSolenoid1.isFwdSolenoidBlackListed());
-    }
-
-    public void my_rollerRUN(double speed) {
-        motor.set(speed);
-    }
 
 }
+
