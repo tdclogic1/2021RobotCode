@@ -42,7 +42,7 @@ public class DriveWithJoystick extends CommandBase {
     @Override
     public void execute() {
         double xSpeed = -m_controller.getRawAxis(1);
-        double zRotation = m_controller.getRawAxis(4) *.5;
+        double zRotation = m_controller.getRawAxis(4);
         m_driveTrain.my_DriveArcade(xSpeed, zRotation);
     }
 

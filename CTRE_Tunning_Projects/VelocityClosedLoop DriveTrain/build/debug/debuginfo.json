@@ -1,0 +1,16 @@
+[
+  {
+    "artifact": "frcJava (in project VelocityClosedLoop DriveTrain)",
+    "target": "roborio",
+    "debugfile": "frcJava_roborio.debugconfig",
+    "project": "VelocityClosedLoop DriveTrain",
+    "language": "java"
+  },
+  {
+    "artifact": "frcJava (in project VelocityClosedLoop)",
+    "target": "roborio",
+    "debugfile": "frcJava_roborio.debugconfig",
+    "project": "VelocityClosedLoop",
+    "language": "java"
+  }
+]
