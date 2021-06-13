@@ -45,6 +45,9 @@ public class FlyWheel_Vel_PID extends SubsystemBase {
     private double velocityUnitsper100ms = 2048.0 / 600.0;
     private double targetVelocity_UnitsPer100ms;
 
+    // Ramp rates in Seconds
+    private double m_closedLoopRamp_sec = 1;
+
     private boolean _currentLimEn = true;
 
     /* String for output */
@@ -97,7 +100,7 @@ public class FlyWheel_Vel_PID extends SubsystemBase {
 
         /* Config the Velocity closed loop gains in slot0 */
         motorFlyWheel_Vel_PIDMaster.config_kF(kPIDLoopIdx, 1023.0 / 20660.0, kTimeoutMs);
-        motorFlyWheel_Vel_PIDMaster.config_kP(kPIDLoopIdx, 0.001, kTimeoutMs);
+        motorFlyWheel_Vel_PIDMaster.config_kP(kPIDLoopIdx, 0.01, kTimeoutMs);
         motorFlyWheel_Vel_PIDMaster.config_kI(kPIDLoopIdx, 0, kTimeoutMs);
         motorFlyWheel_Vel_PIDMaster.config_kD(kPIDLoopIdx, 0, kTimeoutMs);
         /*
@@ -109,6 +112,9 @@ public class FlyWheel_Vel_PID extends SubsystemBase {
          * https://phoenix-documentation.readthedocs.io/en/latest/ch14_MCSensor.html#
          * sensor-phase
          */
+
+         // ensure ramp rate set accordingly
+        motorFlyWheel_Vel_PIDMaster.configClosedloopRamp(m_closedLoopRamp_sec, kTimeoutMs);
 
     }
 

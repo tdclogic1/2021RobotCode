@@ -184,7 +184,7 @@ public class RobotContainer {
     // l_Stick_Button_xbox_Driver;
 
     start_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kStart.value);
-    start_xBox_Driver.whileHeld(new FlyWheel_Velocity(m_FlyWheel_Vel_PID, () -> SmartDashboard.getNumber("Fly Wheel", 0)));
+    start_xBox_Driver.whileHeld(new FlyWheel_Velocity(m_FlyWheel_Vel_PID, () -> SmartDashboard.getNumber("Fly Wheel Setpoint", 0)));
 
     reset_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kBack.value);
     reset_xBox_Driver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed));
@@ -288,6 +288,11 @@ public class RobotContainer {
   }
 
   private void SmartDashboardButtons() {
+
+
+    SmartDashboard.putData("Drive Train Loop Mod Toggle", new DriveTrain_Toggle_Controlmode(m_driveTrain));
+    SmartDashboard.putData("Drive Train Mantain Heading Toggle", new DriveTrain_Toggle_MantainHeading(m_driveTrain));
+
 
     SmartDashboard.putData("Pipeline 1",new LimeLight_Pipline(limeLight1, 1));
 

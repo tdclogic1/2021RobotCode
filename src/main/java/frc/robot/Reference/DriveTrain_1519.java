@@ -8,7 +8,7 @@
 // update. Deleting the comments indicating the section will prevent
 // it from being updated in the future.
 
-package frc.robot.subsystems;
+package frc.robot.Reference;
 
 import frc.robot.Constants;
 import frc.robot.commands.*;
@@ -45,7 +45,6 @@ public class DriveTrain_1519 extends SubsystemBase {
     private WPI_TalonFX rightTalonFollower1;
     private WPI_TalonFX rightTalonFollower2;
 
-    private PigeonIMU pigeonIMU1;
     private PigeonIMU _pidgey = new PigeonIMU(0);
     private double[] xyz_dps = new double[3];
     private double currentAngle = 0;

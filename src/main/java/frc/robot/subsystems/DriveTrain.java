@@ -37,7 +37,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  */
 public class DriveTrain extends SubsystemBase {
 
-    private static final double kDefaultDeadband = 0.02;
+    private static final double kDefaultDeadband = 0.2;
     private static final double kDefaultMaxOutput = 1.0;
 
     protected double m_deadband = kDefaultDeadband;
@@ -82,6 +82,7 @@ public class DriveTrain extends SubsystemBase {
 
     // driving scaling factors
     private static final double FORWARD_BACKWARD_FACTOR = 1.0;
+    private static final double TURN_FACTOR = 0.3;
 
     // private static final double ROTATION_FACTOR_LOW_GEAR = 0.75;
     // private static final double ROTATION_FACTOR_HIGH_GEAR = 0.25;
@@ -93,8 +94,9 @@ public class DriveTrain extends SubsystemBase {
     private boolean m_closedLoopMode = true;
     private TalonFXControlMode m_closedLoopTalonFXMode;
     private double m_maxWheelSpeed_Current;
-    private double m_maxWheelSpeed_HighGear = 20660; //TalonFX intergrated Encoder// // 2016 = 445; //(10.5 Gear box = 445)//360(12.75 gear
-                                                   // box);//550.0; // empirically measured around 560 to 580
+    private double m_maxWheelSpeed_HighGear = 20660; // TalonFX intergrated Encoder// // 2016 = 445; //(10.5 Gear box =
+                                                     // 445)//360(12.75 gear
+                                                     // box);//550.0; // empirically measured around 560 to 580
     private double m_maxWheelSpeed_LowGear = 20660;
     private double m_encoderUnitsPerRev = 2048;
 
@@ -149,16 +151,18 @@ public class DriveTrain extends SubsystemBase {
 
         // Current Limit
         for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
-            /*                                                      enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s) */
+            /* enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s) */
             m_talonsMaster[talonIndex].configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 20, 25, 1.0));
             m_talonsMaster[talonIndex].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
         }
 
         // Current Limit
         for (talonIndex = 0; talonIndex < kMaxNumberOfFollowerMotors; talonIndex++) {
-            /*                                                      enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s) */
-            m_talonsFollowers[talonIndex].configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 20, 25, 1.0));
-            m_talonsFollowers[talonIndex].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
+            /* enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s) */
+            m_talonsFollowers[talonIndex]
+                    .configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 20, 25, 1.0));
+            m_talonsFollowers[talonIndex]
+                    .configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
         }
 
         // set all Talon SRX encoder values to zero
@@ -243,30 +247,26 @@ public class DriveTrain extends SubsystemBase {
         shiftHigh();
     }
 
+    public void Toggle_Controlmode(){
+        if(m_closedLoopTalonFXMode == TalonFXControlMode.Velocity){
+            setOpenLoopMode();
+        }else{
+            setClosedLoopMode();
+        }
+    }
+
     public void setClosedLoopMode() {
         m_closedLoopTalonFXMode = TalonFXControlMode.Velocity;
-
-        int talonIndex = 0;
         m_closedLoopMode = true;
         setWheelPIDF();
-        /*
-         * for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
-         * m_talons[talonIndex].changeControlMode(TalonControlMode.Speed);
-         * m_talons[talonIndex].enableControl();
-         * 
-         * }
-         */
-
+        DriverStation.reportError("Drive Train in Closed Loop Mode", false);
+       
     }
 
     public void setOpenLoopMode() {
         m_closedLoopTalonFXMode = TalonFXControlMode.PercentOutput;
-        /*
-         * int talonIndex = 0; m_closedLoopMode = false; for (talonIndex = 0; talonIndex
-         * < kMaxNumberOfMasterMotors; talonIndex++) {
-         * m_talons[talonIndex].changeControlMode(TalonControlMode.PercentVbus);
-         * m_talons[talonIndex].enableControl(); }
-         */
+        m_closedLoopMode = false;
+        DriverStation.reportError("Drive Train in Open Loop Mode", false);
     }
 
     public void shiftHigh() {
@@ -349,24 +349,33 @@ public class DriveTrain extends SubsystemBase {
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
+    public void my_toggle_preserveHeading(){
+        if(m_preserveHeading_Enable){
+            m_preserveHeading_Enable = false;
+        }else{
+            m_preserveHeading_Enable = true;
+        }
+    }
+
+
     public void my_DriveArcade(double xSpeed, double zRotation) {
         my_DriveArcade(xSpeed, zRotation, true);
     }
 
     public void my_DriveArcade(double xSpeed, double zRotation, boolean squareInputs) {
 
-         // Disable Field Oriantated if Gyro Fails
-         boolean IMU_Connected = true;// headingGyro.isConnected();
-         if (!IMU_Connected) {
-             m_preserveHeading_Enable = false;
-             m_fieldOrientedDrive = false;
-             // SmartDashboard.putBoolean("Field Oriented Drive", m_fieldOrientedDrive);
-             if (!reportERROR_ONS) {
-                 DriverStation.reportError("Lost Gyro - Forcing Robot Oriantated " + "\n", false);
-                 reportERROR_ONS = true;
-             }
- 
-         }
+        // Disable Field Oriantated if Gyro Fails
+        boolean IMU_Connected = true;// headingGyro.isConnected();
+        if (!IMU_Connected) {
+            m_preserveHeading_Enable = false;
+            m_fieldOrientedDrive = false;
+            // SmartDashboard.putBoolean("Field Oriented Drive", m_fieldOrientedDrive);
+            if (!reportERROR_ONS) {
+                DriverStation.reportError("Lost Gyro - Forcing Robot Oriantated " + "\n", false);
+                reportERROR_ONS = true;
+            }
+
+        }
 
         xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
         xSpeed = applyDeadband(xSpeed, m_deadband);
@@ -380,7 +389,19 @@ public class DriveTrain extends SubsystemBase {
             xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
             zRotation = Math.copySign(zRotation * zRotation, zRotation);
         }
-        
+
+        // Apply Rotation Scaller
+
+        if (my_GetIsCurrentGearHigh()) {
+
+            zRotation = zRotation * .2;// TURN_FACTOR;
+
+        } else { // In low gear
+
+            zRotation = zRotation * 1;
+        }
+
+
         // update count of iterations since rotation last commanded
         if ((-0.01 < zRotation) && (zRotation < 0.01)) {
             // rotation is practically zero, so just set it to zero and
@@ -399,6 +420,9 @@ public class DriveTrain extends SubsystemBase {
             if (m_preserveHeading_Enable) {
                 zRotation = -(m_desiredHeading - getHeading()) * kP_preserveHeading_Telepo;
                 // SmartDashboard.putNumber("MaintainHeaading ROtation", rotation);
+            }else{
+                //This clears the iterations Counter so If m_preserveHeading_Enable is enables a new m_desiredHeading can be captureed
+                m_iterationsSinceRotationCommanded = 0;
             }
         }
 
@@ -422,6 +446,15 @@ public class DriveTrain extends SubsystemBase {
             }
         } else {
             return 0.0;
+        }
+    }
+
+    public boolean my_GetIsCurrentGearHigh() {
+        if (dBL_Sol_Shifter.get() == Value.kReverse) {
+            return true;
+
+        } else {
+            return false;
         }
     }
 
@@ -480,8 +513,8 @@ public class DriveTrain extends SubsystemBase {
     private void driveCartesian(double xSpeed, double zRotation) {
         int talonIndex = 0;
 
-        SmartDashboard.putNumber("xSpeed", xSpeed);
-        SmartDashboard.putNumber("xRotation", zRotation);
+        //SmartDashboard.putNumber("xSpeed",xSpeed);
+        //SmartDashboard.putNumber("xRotation", zRotation);
 
         m_wheelSpeeds[kLeft] = xSpeed + zRotation;
         m_wheelSpeeds[kRight] = xSpeed - zRotation;
@@ -492,8 +525,8 @@ public class DriveTrain extends SubsystemBase {
         // want to do all the sets immediately after one another to minimize
         // delay between commands
         // set all Talon SRX encoder values to zero
-        // SmartDashboard.putNumber("Left talon", m_wheelSpeeds[kLeft]);
-        // SmartDashboard.putNumber("Right talon", m_wheelSpeeds[kRight]);
+        //SmartDashboard.putNumber("Left talon", m_wheelSpeeds[kLeft]);
+        //SmartDashboard.putNumber("Right talon", m_wheelSpeeds[kRight]);
         for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
             m_talonsMaster[talonIndex].set(m_closedLoopTalonFXMode, m_wheelSpeeds[talonIndex]);
             // m_talonsMaster[talonIndex].set(m_closedLoopTalonFXMode,
@@ -506,8 +539,8 @@ public class DriveTrain extends SubsystemBase {
         double tempMagnitude;
         double maxMagnitude;
 
-        // SmartDashboard.putNumber("a_wheelSpeeds[kLeft]", m_wheelSpeeds[kLeft]);
-        // SmartDashboard.putNumber("a_wheelSpeeds[kRight]", m_wheelSpeeds[kRight]);
+        //SmartDashboard.putNumber("a_wheelSpeeds[kLeft]", m_wheelSpeeds[kLeft]);
+        //SmartDashboard.putNumber("a_wheelSpeeds[kRight]", m_wheelSpeeds[kRight]);
         // find maxMagnitude
         maxMagnitude = Math.abs(m_wheelSpeeds[0]);
         for (i = 1; i < kMaxNumberOfMasterMotors; i++) {
@@ -525,8 +558,8 @@ public class DriveTrain extends SubsystemBase {
                 m_wheelSpeeds[i] = m_wheelSpeeds[i] / maxMagnitude;
             }
         }
-        // SmartDashboard.putNumber("b_wheelSpeeds[kLeft]", m_wheelSpeeds[kLeft]);
-        // SmartDashboard.putNumber("b_wheelSpeeds[kRight]", m_wheelSpeeds[kRight]);
+        //SmartDashboard.putNumber("b_wheelSpeeds[kLeft]", m_wheelSpeeds[kLeft]);
+        //SmartDashboard.putNumber("b_wheelSpeeds[kRight]", m_wheelSpeeds[kRight]);
         // if in closedLoopMode, scale wheels to be speeds, rather than power
         // percentage
         if (m_closedLoopMode) {
