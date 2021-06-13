@@ -195,22 +195,22 @@ public class RobotContainer {
     povNorth_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> 180 ));
 
     povNorthEast_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.NORTHEAST);
-    // povNorthEast_xBox_Driver;
+    povNorthEast_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> m_TurretAim_MM.get_MaxPos() ));
 
     povNorthWest_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.NORTHWEST);
-    // povNorthWest_xBox_Driver;
+    povNorthWest_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> 90+45 ));
 
     povSouth_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.SOUTH);
     povSouth_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM, () -> 0 ));
 
     povSouthEast_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.SOUTHEAST);
-    // povSouthEast_xBox_Driver;
+    povSouthEast_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> m_TurretAim_MM.get_minPos() ));
 
     povSouthWest_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.SOUTHWEST);
-    // povSouthWest_xBox_Driver;
+    povSouthWest_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> 45));
 
     povWest_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.WEST);
-    // povWest_xBox_Driver;
+    povWest_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> 90 ));
 
     povEast_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.EAST);
     // povEast_xBox_Driver;
@@ -220,7 +220,7 @@ public class RobotContainer {
   private void codriverButtons() {
 
     a_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kA.value);
-    //a_xBox_CoDriver.whenPressed(new IntakeExtend(m_intake), true);
+    //a_xBox_CoDriver.whileHeld(new Turret_Jog_MotionMagic(m_TurretAim_MM, () -> coDriverControlls.getRawAxis(0)));
 
     b_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kB.value);
     //b_xBox_CoDriver.whenPressed(new IntakeRetract(m_intake), false);
@@ -287,6 +287,8 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("Fly Wheel", 5000);
     SmartDashboard.putData("Reset Turt Pos", new Turret_Reset_Pos(m_TurretAim_MM));
+
+    SmartDashboard.putData("Jog Turret", new Turret_Jog_MotionMagic(m_TurretAim_MM, () -> driverControlls.getRawAxis(0)));
 
     SmartDashboard.putData("Autonomous Command", new AutonomousCommand());
     SmartDashboard.putData("IntakeIntake", new IntakeIntake(m_intake));

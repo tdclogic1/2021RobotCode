@@ -37,7 +37,7 @@ public class TurretAim_MM extends SubsystemBase {
     private LimeLight limeLight1;
     private TalonSRX _talon;
     private final double ENCODER_COUNTS_PER_DEG = 905;
-    private final double maxDegTravle = 255;
+    private final double maxDegTravle = 250;
     private final double minTarget = -35;
     private final double maxTarget = minTarget + maxDegTravle;
 
@@ -141,8 +141,20 @@ public class TurretAim_MM extends SubsystemBase {
         _talon.setSelectedSensorPosition(minTarget * ENCODER_COUNTS_PER_DEG);
     }
 
-    private double get_currentPos() {
-        return _talon.getSelectedSensorPosition(0) / ENCODER_COUNTS_PER_DEG;
+    public double get_currentPos() {
+        return get_My_CurrentRAW_Postion() / ENCODER_COUNTS_PER_DEG;
     }
+
+	private double get_My_CurrentRAW_Postion() {
+		return _talon.getSelectedSensorPosition(0);
+	}
+
+	public double get_MaxPos() {
+		return maxTarget;
+	}
+
+	public double get_minPos() {
+		return minTarget;
+	}
 
 }
