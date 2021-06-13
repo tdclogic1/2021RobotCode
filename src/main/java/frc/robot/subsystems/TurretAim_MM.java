@@ -115,18 +115,15 @@ public class TurretAim_MM extends SubsystemBase {
     }
 
     public void my_Aim_MotoionMagic(double targetPosDeg) {
-
-        
-        double targetPos = clampTargetPos(targetPosDeg ) * ENCODER_COUNTS_PER_DEG;
-        DriverStation.reportError("Aim Motion Magic targetPos - " + targetPos , false);
+        double targetPos = clampTargetPos(targetPosDeg) * ENCODER_COUNTS_PER_DEG;
         _talon.set(ControlMode.MotionMagic, targetPos);
 
     }
 
     private double clampTargetPos(double pos) {
-        if (pos > maxTarget) {
+        if (pos > (maxTarget - 5)) {
             return maxTarget;
-        } else if (pos < minTarget) {
+        } else if (pos < (minTarget + 5)) {
             return minTarget;
         } else {
             return pos;
@@ -145,16 +142,16 @@ public class TurretAim_MM extends SubsystemBase {
         return get_My_CurrentRAW_Postion() / ENCODER_COUNTS_PER_DEG;
     }
 
-	private double get_My_CurrentRAW_Postion() {
-		return _talon.getSelectedSensorPosition(0);
-	}
+    private double get_My_CurrentRAW_Postion() {
+        return _talon.getSelectedSensorPosition(0);
+    }
 
-	public double get_MaxPos() {
-		return maxTarget;
-	}
+    public double get_MaxPos() {
+        return maxTarget;
+    }
 
-	public double get_minPos() {
-		return minTarget;
-	}
+    public double get_minPos() {
+        return minTarget;
+    }
 
 }

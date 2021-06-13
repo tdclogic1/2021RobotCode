@@ -14,6 +14,7 @@ import frc.robot.commands.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpiutil.math.MathUtil;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -34,16 +35,18 @@ public class DriveTrain extends SubsystemBase {
     private WPI_TalonFX talonFX6;
     private SpeedControllerGroup rightMotorControllerGroup;
     private DifferentialDrive differentialDrive1;
-    private PigeonIMU pigeonIMU1;
 
     private static final int kMaxNumberOfMotors = 2;
     private WPI_TalonFX[] m_talons = new WPI_TalonFX[kMaxNumberOfMotors];
 
+    private PigeonIMU pigeonIMU1;
     private PigeonIMU _pidgey = new PigeonIMU(0);
-    private double [] xyz_dps = new double [3];
+    private double[] xyz_dps = new double[3];
     private double currentAngle = 0;
     private boolean angleIsGood = false;
     private double currentAngularRate = xyz_dps[2];
+
+    private double m_desiredHeading = 0.0;
 
     /**
     *
@@ -83,6 +86,7 @@ public class DriveTrain extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        SmartDashboard.putNumber("Current Heading", getHeading());
 
     }
 
@@ -100,5 +104,57 @@ public class DriveTrain extends SubsystemBase {
         SmartDashboard.putNumber("xRotation", zRotation);
 
         differentialDrive1.arcadeDrive(-xSpeed, zRotation);
+    }
+
+    private void getPidgey() {
+        /* some temps for Pigeon API */
+        PigeonIMU.GeneralStatus genStatus = new PigeonIMU.GeneralStatus();
+        PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
+
+        /* grab some input data from Pigeon and gamepad */
+        _pidgey.getGeneralStatus(genStatus);
+        _pidgey.getRawGyro(xyz_dps);
+        _pidgey.getFusedHeading(fusionStatus);
+        currentAngle = fusionStatus.heading;
+        angleIsGood = (_pidgey.getState() == PigeonIMU.PigeonState.Ready) ? true : false;
+        currentAngularRate = xyz_dps[2];
+    }
+
+    public void setgyroOffset(double adjustment) {
+        // Follow up headingGyro.setAngleAdjustment(adjustment);
+        // headingGyro_BCK.setAngledAdjustimenet(adjustment); // Not available
+        _pidgey.setFusedHeading(adjustment);
+        // _pidgey.setYaw(adjustment);
+    }
+
+    public double getHeading() {
+        getPidgey();
+        double heading;
+        if (angleIsGood) {
+            heading = currentAngle;
+        } else {
+            heading = 0;// headingGyro_BCK.getAngle() + headingGyro.getAngleAdjustment();//Try to use
+                        // the Back up Gyro with the angle Adjustment
+        }
+
+        return heading;
+        // return headingGyro.getFusedHeading();
+    }
+
+    public void resetHeadingGyro() {
+        _pidgey.setFusedHeading(0);
+        m_desiredHeading = 0.0;
+    }
+
+    public void clearDesiredHeading() {
+        m_desiredHeading = getHeading();
+    }
+
+    public void setdesiredHeading(double heading) {
+        m_desiredHeading = heading;
+    }
+
+    public void recalibrateHeadingGyro() {
+        resetHeadingGyro();
     }
 }

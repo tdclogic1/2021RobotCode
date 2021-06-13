@@ -62,8 +62,6 @@ public class Intake extends SubsystemBase {
         DriverStation.reportWarning("my_Retract()", false);
         // DriverStation.reportWarning(DoubleSolenoid.Value.kReverse, false);
         doubleSolenoid1.set(Value.kReverse);
-        SmartDashboard.putBoolean("doubleSolenoid1.isFwdSolenoidBlackListed()",
-                doubleSolenoid1.isFwdSolenoidBlackListed());
     }
 
     public void my_rollerRUN(double speed) {

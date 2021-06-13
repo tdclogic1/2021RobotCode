@@ -125,7 +125,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Configure default commands
-    //m_driveTrain.setDefaultCommand(new DriveWithJoystick(m_driveTrain, driverControlls));
+    m_driveTrain.setDefaultCommand(new DriveWithJoystick(m_driveTrain, driverControlls));
 
     // Configure autonomous sendable chooser
 
@@ -285,22 +285,17 @@ public class RobotContainer {
 
   private void SmartDashboardButtons() {
 
-    SmartDashboard.putNumber("Fly Wheel", 5000);
+    SmartDashboard.putData("Turret Gyro tracking", new Turret_Gyro_Tracking(m_TurretAim_MM, () -> m_driveTrain.getHeading()));
+
+    SmartDashboard.putData("Reset Gyro", new DriveTrain_Reset_Gyro(m_driveTrain));
+
+    SmartDashboard.putNumber("Fly Wheel Setpoint", 5000);
     SmartDashboard.putData("Reset Turt Pos", new Turret_Reset_Pos(m_TurretAim_MM));
 
     SmartDashboard.putData("Jog Turret", new Turret_Jog_MotionMagic(m_TurretAim_MM, () -> driverControlls.getRawAxis(0)));
 
     SmartDashboard.putData("Autonomous Command", new AutonomousCommand());
-    SmartDashboard.putData("IntakeIntake", new IntakeIntake(m_intake));
-    SmartDashboard.putData("IntakeOutake", new IntakeOutake(m_intake));
-    SmartDashboard.putData("IntakeExtend", new IntakeExtend(m_intake));
-    SmartDashboard.putData("IntakeRetract", new IntakeRetract(m_intake));
-    SmartDashboard.putData("TurretTurn", new TurretTurn(m_TurretAim_MM));
 
-    SmartDashboard.putData("Xbox Button 4", new IntakePowercell(m_intake));
-    SmartDashboard.putData("Xbox Button 3", new IntakeEjectPowercell(m_intake));
-    SmartDashboard.putData("Xbox Button 2", new IntakeRetract(m_intake));
-    SmartDashboard.putData("Xbox Button 1", new IntakeExtend(m_intake));
   }
 
   public XboxController getDriverControlls() {
