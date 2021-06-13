@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -28,10 +30,15 @@ public class Intake extends SubsystemBase {
     private DoubleSolenoid doubleSolenoid1;
     private WPI_VictorSPX motor;
 
+    private Compressor compressor;
     /**
     *
     */
     public Intake() {
+
+
+        compressor = new Compressor(0);
+        compressor.stop();
 
         doubleSolenoid1 = new DoubleSolenoid(0, 3, 2);
         addChild("Double Solenoid 1", doubleSolenoid1);

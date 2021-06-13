@@ -41,8 +41,8 @@ public class DriveWithJoystick extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double xSpeed = 0;//-m_controller.getRawAxis(1);
-        double zRotation = -m_controller.getRawAxis(4) *.5;
+        double xSpeed = -m_controller.getRawAxis(1);
+        double zRotation = m_controller.getRawAxis(4) *.5;
         m_driveTrain.my_DriveArcade(xSpeed, zRotation);
     }
 

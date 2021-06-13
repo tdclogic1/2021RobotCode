@@ -10,14 +10,20 @@
 
 package frc.robot.subsystems;
 
+import frc.robot.Constants;
 import frc.robot.commands.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -26,18 +32,21 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  */
 public class DriveTrain extends SubsystemBase {
 
-    private WPI_TalonFX talonFX1;
-    private WPI_TalonFX talonFX2;
-    private WPI_TalonFX talonFX3;
-    private SpeedControllerGroup leftMotorControllerGroup;
-    private WPI_TalonFX talonFX4;
-    private WPI_TalonFX talonFX5;
-    private WPI_TalonFX talonFX6;
-    private SpeedControllerGroup rightMotorControllerGroup;
-    private DifferentialDrive differentialDrive1;
+    private static final double kDefaultDeadband = 0.02;
+    private static final double kDefaultMaxOutput = 1.0;
 
-    private static final int kMaxNumberOfMotors = 2;
-    private WPI_TalonFX[] m_talons = new WPI_TalonFX[kMaxNumberOfMotors];
+    protected double m_deadband = kDefaultDeadband;
+    protected double m_maxOutput = kDefaultMaxOutput;
+
+    private StringBuilder _sb = new StringBuilder();
+    private int m_kPIDLoopIdx;
+    private DoubleSolenoid dBL_Sol_Shifter;
+    private WPI_TalonFX leftTalonMaster;
+    private WPI_TalonFX leftTalonFollower1;
+    private WPI_TalonFX leftTalonFollower2;
+    private WPI_TalonFX rightTalonMaster;
+    private WPI_TalonFX rightTalonFollower1;
+    private WPI_TalonFX rightTalonFollower2;
 
     private PigeonIMU pigeonIMU1;
     private PigeonIMU _pidgey = new PigeonIMU(0);
@@ -46,41 +55,155 @@ public class DriveTrain extends SubsystemBase {
     private boolean angleIsGood = false;
     private double currentAngularRate = xyz_dps[2];
 
+    private static final int kMaxNumberOfMasterMotors = 2;
+    private static final int kMaxNumberOfFollowerMotors = 4;
+    private final int m_invertedMotors[] = new int[kMaxNumberOfMasterMotors];
+    private static final int kLeft = 0;
+    private static final int kRight = 1;
+
+    private WPI_TalonFX[] m_talonsMaster = new WPI_TalonFX[kMaxNumberOfMasterMotors];
+    private WPI_TalonFX[] m_talonsFollowers = new WPI_TalonFX[kMaxNumberOfFollowerMotors];
+    private double m_wheelSpeeds[] = new double[kMaxNumberOfMasterMotors];
+    private double m_zeroPositions[] = new double[kMaxNumberOfMasterMotors];
+    private double m_wheeltargetPos[] = new double[kMaxNumberOfMasterMotors];
+
+    private boolean m_useVoltageRamp = true;
+    private double m_voltageRampRate = 36.0;// 48.0; // in volts/second
+    private boolean m_fieldOrientedDrive = false;
+
+    private int m_iterationsSinceRotationCommanded = 0;
     private double m_desiredHeading = 0.0;
+    // private boolean m_drivingAutoInTeleop = false;
+
+    // driving scaling factors
+    private static final double FORWARD_BACKWARD_FACTOR = 1.0;
+
+    // private static final double ROTATION_FACTOR_LOW_GEAR = 0.75;
+    // private static final double ROTATION_FACTOR_HIGH_GEAR = 0.25;
+    private static final double SLOW_FACTOR = 0.35;// 0.35; // scaling factor for (normal) "slow mode" .35
+    private static final double CRAWL_INPUT = 0.30; // "crawl" is a gentle control input
+    public static final double ALIGN_SPEED = 0.10;
+
+    // member variables to support closed loop mode
+    private boolean m_closedLoopMode = false;
+    private ControlMode m_closedLoopMode2018;
+    private double m_maxWheelSpeed_Current;
+    private double m_maxWheelSpeed_HighGear = 747; // // 2016 = 445; //(10.5 Gear box = 445)//360(12.75 gear
+                                                   // box);//550.0; // empirically measured around 560 to 580
+    private double m_maxWheelSpeed_LowGear = 278;
+    private double m_encoderUnitsPerRev = 4096;
+
+    // Ramp rates in Seconds
+    private double m_closedLoopRamp_sec = .25;
+    private double m_openLoopRamp_sec = 0.0;
+
+    // **************************************
+    // NO GYRO ?
+    // ************************************** */
+    private boolean m_preserveHeading_Enable = true;
+    private int m_preserveHeading_Iterations = 50;// 5 Original Driver Didn't like the snappy action
+    private double kP_preserveHeading_Telepo = 0.005; // 0.025; Original Driver Didn't like the snappy action
+    private double kP_preserveHeading_Auto = 0.025; // 0.025
+    private boolean reportERROR_ONS = false;
+
+    private boolean m_Craling = false;
 
     /**
     *
     */
     public DriveTrain() {
 
-        talonFX1 = new WPI_TalonFX(13);
+        dBL_Sol_Shifter = new DoubleSolenoid(0, 4, 5);
+        addChild("DBL_Sol_Shifter", dBL_Sol_Shifter);
 
-        talonFX2 = new WPI_TalonFX(14);
+        leftTalonMaster = new WPI_TalonFX(13);
+        leftTalonMaster.configFactoryDefault();
+        leftTalonFollower1 = new WPI_TalonFX(14);
+        leftTalonFollower1.configFactoryDefault();
+        leftTalonFollower2 = new WPI_TalonFX(15);
+        leftTalonFollower2.configFactoryDefault();
 
-        talonFX3 = new WPI_TalonFX(15);
+        rightTalonMaster = new WPI_TalonFX(0);
+        rightTalonMaster.configFactoryDefault();
+        rightTalonFollower1 = new WPI_TalonFX(1);
+        rightTalonFollower1.configFactoryDefault();
+        rightTalonFollower2 = new WPI_TalonFX(2);
+        rightTalonFollower2.configFactoryDefault();
 
-        SpeedControllerGroup leftMotorControllerGroup = new SpeedControllerGroup(talonFX1, talonFX2, talonFX3);
-        addChild("LeftMotorControllerGroup", leftMotorControllerGroup);
+        int talonIndex = 0;
 
-        talonFX4 = new WPI_TalonFX(0);
+        // construct the talons
+        m_talonsMaster[kLeft] = leftTalonMaster;
+        m_talonsMaster[kRight] = rightTalonMaster;
 
-        talonFX5 = new WPI_TalonFX(1);
+        // Group the Followers
+        m_talonsFollowers[0] = leftTalonFollower1;
+        m_talonsFollowers[1] = leftTalonFollower2;
+        m_talonsFollowers[2] = rightTalonFollower1;
+        m_talonsFollowers[3] = rightTalonFollower2;
 
-        talonFX6 = new WPI_TalonFX(2);
+        // set all Talon SRX encoder values to zero
+        for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
+            // m_talonsMaster[talonIndex].setPosition(0);
+            m_talonsMaster[talonIndex].setSelectedSensorPosition(0, 0, Constants.kTimeoutMs);
+        }
 
-        SpeedControllerGroup rightMotorControllerGroup = new SpeedControllerGroup(talonFX4, talonFX5, talonFX6);
-        addChild("RightMotorControllerGroup", rightMotorControllerGroup);
+        // set all the Talon feedback Devices
+        for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
+            // m_talonsMaster[talonIndex].setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+            m_talonsMaster[talonIndex].configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
+                    Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+        }
 
-        differentialDrive1 = new DifferentialDrive(leftMotorControllerGroup, rightMotorControllerGroup);
-        addChild("DifferentialDrive1", differentialDrive1);
-        differentialDrive1.setSafetyEnabled(true);
-        differentialDrive1.setExpiration(0.1);
-        differentialDrive1.setMaxOutput(1.0);
+        // Configure Nominal Output Voltage
+        for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
+            // m_talonsMaster[talonIndex].configNominalOutputVoltage(+0.0f, -0.0f);
+            m_talonsMaster[talonIndex].configNominalOutputForward(0, Constants.kTimeoutMs);
+            m_talonsMaster[talonIndex].configNominalOutputReverse(0, Constants.kTimeoutMs);
+        }
 
-  
+        // Configure Peak Output Voltage
+        for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
+            // m_talonsMaster[talonIndex].configPeakOutputVoltage(+12.0f, -12.0f);
+            m_talonsMaster[talonIndex].configPeakOutputForward(1, Constants.kTimeoutMs);
+            m_talonsMaster[talonIndex].configPeakOutputReverse(-1, Constants.kTimeoutMs);
+        }
 
-        differentialDrive1.setDeadband(.1);
-        differentialDrive1.setSafetyEnabled(false);
+        // put all Talon SRX into brake mode
+        for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
+            m_talonsMaster[talonIndex].setNeutralMode(NeutralMode.Coast);
+
+        }
+
+        // put all Talon SRX into brake mode
+        for (talonIndex = 0; talonIndex < kMaxNumberOfFollowerMotors; talonIndex++) {
+            m_talonsFollowers[talonIndex].setNeutralMode(NeutralMode.Coast);
+
+        }
+
+        // ensure ramp rate set accordingly
+        if (m_useVoltageRamp) {
+            for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
+                // m_talonsMaster[talonIndex].setVoltageRampRate(m_voltageRampRate);
+                m_talonsMaster[talonIndex].configClosedloopRamp(m_closedLoopRamp_sec, Constants.kTimeoutMs);
+            }
+        } else {
+            // clear all voltage ramp rates
+            for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
+                // m_talonsMaster[talonIndex].setVoltageRampRate(0.0);
+                m_talonsMaster[talonIndex].configClosedloopRamp(m_openLoopRamp_sec, Constants.kTimeoutMs);
+            }
+        }
+
+        rightTalonFollower1.follow(rightTalonMaster);
+        rightTalonFollower2.follow(rightTalonMaster);
+        leftTalonFollower1.follow(leftTalonMaster);
+        leftTalonFollower2.follow(leftTalonMaster);
+
+        // Also need to set up the "inverted motors" array for the mecanum drive
+        // code
+        m_invertedMotors[kLeft] = -1;
+        m_invertedMotors[kRight] = 1;
     }
 
     @Override
@@ -98,12 +221,47 @@ public class DriveTrain extends SubsystemBase {
 
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
+
     public void my_DriveArcade(double xSpeed, double zRotation) {
+        my_DriveArcade(xSpeed, zRotation, true);
+    }
 
-        SmartDashboard.putNumber("xSpeed", xSpeed);
-        SmartDashboard.putNumber("xRotation", zRotation);
+    public void my_DriveArcade(double xSpeed, double zRotation, boolean squareInputs) {
 
-        differentialDrive1.arcadeDrive(-xSpeed, zRotation);
+        xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
+        xSpeed = applyDeadband(xSpeed, m_deadband);
+
+        zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
+        zRotation = applyDeadband(zRotation, m_deadband);
+
+        // Square the inputs (while preserving the sign) to increase fine control
+        // while permitting full power.
+        if (squareInputs) {
+            xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
+            zRotation = Math.copySign(zRotation * zRotation, zRotation);
+        }
+
+        driveCartesian(xSpeed, zRotation);
+        // differentialDrive1.arcadeDrive(-xSpeed, zRotation);
+    }
+
+    /**
+     * Returns 0.0 if the given value is within the specified range around zero. The
+     * remaining range between the deadband and 1.0 is scaled from 0.0 to 1.0.
+     *
+     * @param value    value to clip
+     * @param deadband range around zero
+     */
+    protected double applyDeadband(double value, double deadband) {
+        if (Math.abs(value) > deadband) {
+            if (value > 0.0) {
+                return (value - deadband) / (1.0 - deadband);
+            } else {
+                return (value + deadband) / (1.0 - deadband);
+            }
+        } else {
+            return 0.0;
+        }
     }
 
     private void getPidgey() {
@@ -156,5 +314,85 @@ public class DriveTrain extends SubsystemBase {
 
     public void recalibrateHeadingGyro() {
         resetHeadingGyro();
+    }
+
+    private void driveCartesian(double xSpeed, double zRotation) {
+        int talonIndex = 0;
+
+        SmartDashboard.putNumber("xSpeed", xSpeed);
+        SmartDashboard.putNumber("xRotation", zRotation);
+
+        m_wheelSpeeds[kLeft] = xSpeed + zRotation;
+        m_wheelSpeeds[kRight] = xSpeed - zRotation;
+
+        normalizeAndScaleWheelSpeeds();
+        correctInvertedMotors();
+
+        // want to do all the sets immediately after one another to minimize
+        // delay between commands
+        // set all Talon SRX encoder values to zero
+        //SmartDashboard.putNumber("Left talon", m_wheelSpeeds[kLeft]);
+        //SmartDashboard.putNumber("Right talon", m_wheelSpeeds[kRight]);
+        for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
+            m_talonsMaster[talonIndex].set(ControlMode.PercentOutput, m_wheelSpeeds[talonIndex]);
+            // m_talonsMaster[talonIndex].set(m_closedLoopMode2018,
+            // m_wheelSpeeds[talonIndex]);
+        }
+    }
+
+    private void normalizeAndScaleWheelSpeeds() {
+        int i;
+        double tempMagnitude;
+        double maxMagnitude;
+
+        // SmartDashboard.putNumber("a_wheelSpeeds[kLeft]", m_wheelSpeeds[kLeft]);
+        // SmartDashboard.putNumber("a_wheelSpeeds[kRight]", m_wheelSpeeds[kRight]);
+        // find maxMagnitude
+        maxMagnitude = Math.abs(m_wheelSpeeds[0]);
+        for (i = 1; i < kMaxNumberOfMasterMotors; i++) {
+            tempMagnitude = Math.abs(m_wheelSpeeds[i]);
+            if (tempMagnitude > maxMagnitude) {
+                maxMagnitude = tempMagnitude;
+            }
+        }
+
+        // SmartDashboard.putNumber("maxMagnitude", maxMagnitude);
+        // if any wheel has a magnitude greater than 1.0, reduce all to fit in
+        // range
+        if (maxMagnitude > 1.0) {
+            for (i = 0; i < kMaxNumberOfMasterMotors; i++) {
+                m_wheelSpeeds[i] = m_wheelSpeeds[i] / maxMagnitude;
+            }
+        }
+        // SmartDashboard.putNumber("b_wheelSpeeds[kLeft]", m_wheelSpeeds[kLeft]);
+        // SmartDashboard.putNumber("b_wheelSpeeds[kRight]", m_wheelSpeeds[kRight]);
+        // if in closedLoopMode, scale wheels to be speeds, rather than power
+        // percentage
+        if (m_closedLoopMode) {
+            for (i = 0; i < kMaxNumberOfMasterMotors; i++) {
+                // SmartDashboard.putNumber("c_wheelSpeeds[kLeft]", m_wheelSpeeds[kLeft]);
+                // SmartDashboard.putNumber("c_wheelSpeeds[krigt]", m_wheelSpeeds[kRight]);
+                /* Speed mode */
+                /*
+                 * 4096 Units/Rev * 500 RPM / 600 100ms/min in either direction: velocity
+                 * setpoint is in units/100ms
+                 */
+                m_wheelSpeeds[i] = m_wheelSpeeds[i] * m_maxWheelSpeed_Current * m_encoderUnitsPerRev / 600;
+                // SmartDashboard.putNumber("m_maxWheelSpeed_Current", m_maxWheelSpeed_Current);
+                // SmartDashboard.putNumber("d_wheelSpeeds[kLeft]", m_wheelSpeeds[kLeft]);
+                // SmartDashboard.putNumber("d_wheelSpeeds[kRight]", m_wheelSpeeds[kRight]);
+            }
+        }
+    }
+
+    /**
+     * Correct any inverted motors
+     */
+    private void correctInvertedMotors() {
+        int i;
+
+        for (i = 0; i < kMaxNumberOfMasterMotors; i++) {
+            m_wheelSpeeds[i] = m_wheelSpeeds[i] * m_invertedMotors[i];
+        }
     }
 }
