@@ -263,7 +263,7 @@ Children:
           validators: *id004
           value: MotorLeftFalcon
       Base: Speed Controller Group
-      Name: FlyWheel
+      Name: FlyWheel_Vel_PID
     - Children: []
       Properties:
         CAN ID: !!robotbuilder.data.properties.ChoicesProperty
@@ -375,7 +375,7 @@ Children:
         validators: null
         value: []
     Base: Subsystem
-    Name: TurretAim
+    Name: TurretAim_MM
   Properties: {}
   Base: Subsystems
   Name: Subsystems
@@ -584,7 +584,7 @@ Children:
       Run When Disabled: !!robotbuilder.data.properties.BooleanProperty {default: false,
         name: Run When Disabled, validators: null, value: false}
       Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
-        name: Requires, type: Subsystem, validators: null, value: TurretAim}
+        name: Requires, type: Subsystem, validators: null, value: TurretAim_MM}
       Parameter presets: !!robotbuilder.data.properties.ParameterSetProperty
         default: []
         name: Parameter presets

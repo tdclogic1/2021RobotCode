@@ -5,6 +5,7 @@
 package frc.robot.util;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.Button;
 
 
@@ -28,8 +29,9 @@ public class JoystickPOVButton extends Button {
     	joystick = stick;
         desiredPOV = newDesiredPOV;
     }
-    
-    public boolean get() {
+
+
+	public boolean get() {
     	return (joystick.getPOV() == desiredPOV);
     }
 }
