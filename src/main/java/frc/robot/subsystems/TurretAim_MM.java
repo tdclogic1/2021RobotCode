@@ -26,7 +26,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
-import oi.limelightvision.limelight.frc.LimeLight;
+
 
 /**
  *
@@ -34,7 +34,7 @@ import oi.limelightvision.limelight.frc.LimeLight;
  */
 public class TurretAim_MM extends SubsystemBase {
 
-    private LimeLight limeLight1;
+    
     private TalonSRX _talon;
     private final double ENCODER_COUNTS_PER_DEG = 905;
     private final double maxDegTravle = 250;
@@ -46,7 +46,7 @@ public class TurretAim_MM extends SubsystemBase {
     */
     public TurretAim_MM() {
 
-        limeLight1 = new LimeLight("limelight");
+      
 
         _talon = new WPI_TalonSRX(5);
 

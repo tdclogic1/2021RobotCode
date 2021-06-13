@@ -15,6 +15,7 @@ import frc.robot.subsystems.*;
 import frc.robot.util.JoystickPOVButton;
 import frc.robot.util.XboxControllerAxisButton;
 import frc.robot.util.XboxPOVButton;
+import oi.limelightvision.limelight.frc.LimeLight;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -112,6 +113,9 @@ public class RobotContainer {
   private final XboxController coDriverControlls = new XboxController(1);
   private final XboxController driverControlls = new XboxController(0);
   private final Joystick launchpad = new Joystick(2);
+
+  //Camera
+  private final LimeLight limeLight1 = new LimeLight("limelight");
 
   // A chooser for autonomous commands
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -284,6 +288,8 @@ public class RobotContainer {
   }
 
   private void SmartDashboardButtons() {
+
+    SmartDashboard.putData("Pipeline 1",new LimeLight_Pipline(limeLight1, 1));
 
     SmartDashboard.putData("Turret Gyro tracking", new Turret_Gyro_Tracking(m_TurretAim_MM, () -> m_driveTrain.getHeading()));
 
