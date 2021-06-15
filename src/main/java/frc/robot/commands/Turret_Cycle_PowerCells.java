@@ -25,7 +25,7 @@ public class Turret_Cycle_PowerCells extends CommandBase {
   @Override
   public void execute() {
     m_turretFeed.my_IndexerRun(.75);
-    m_turretFeed.my_AgitatorRun(.75);
+    m_turretFeed.my_AgitatorRun(.2);
   }
 
   // Called once the command ends or is interrupted.

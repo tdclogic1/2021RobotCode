@@ -37,8 +37,8 @@ public class Intake extends SubsystemBase {
     public Intake() {
 
 
-        compressor = new Compressor(0);
-        compressor.stop();
+        //compressor = new Compressor(0);
+        //compressor.stop();
 
         doubleSolenoid1 = new DoubleSolenoid(0, 3, 2);
         addChild("Double Solenoid 1", doubleSolenoid1);

@@ -57,7 +57,7 @@ public class Turret_Jog_MotionMagic extends CommandBase {
 
   private double get_Jog_Setpoint(double setpoint){
    
-    double maxStep = 10;  
+    double maxStep = 5;  
 
     m_Setpoint = (m_TurretAim_MM.get_currentPos() + (setpoint * maxStep));
     
@@ -71,7 +71,7 @@ public class Turret_Jog_MotionMagic extends CommandBase {
   }
 
   private double deadband(double setpoint){
-    double deadband = .1;
+    double deadband = .2;
     if(Math.abs(setpoint)<deadband){
       return 0.0;
     }else{
