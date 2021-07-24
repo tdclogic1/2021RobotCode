@@ -20,7 +20,7 @@ public class Turret_Reset_Pos extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_TurretAim_MM.my_SetPos();
+    m_TurretAim_MM.my_SetPos(m_TurretAim_MM.get_minPos());
   }
 
   // Called every time the scheduler runs while the command is scheduled.

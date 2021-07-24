@@ -118,7 +118,7 @@ public class DriveTrain extends SubsystemBase {
     /**
     *
     */
-    public DriveTrain() {
+    public DriveTrain(boolean demo) {
 
         dBL_Sol_Shifter = new DoubleSolenoid(0, 4, 5);
         addChild("DBL_Sol_Shifter", dBL_Sol_Shifter);
@@ -152,8 +152,13 @@ public class DriveTrain extends SubsystemBase {
         // Current Limit
         for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
             /* enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s) */
-            m_talonsMaster[talonIndex].configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 20, 25, 1.0));
-            m_talonsMaster[talonIndex].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
+            if(demo){
+                m_talonsMaster[talonIndex].configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 10, 25, 1.0));
+                m_talonsMaster[talonIndex].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 5, 15, 0.5));
+            }else{
+                m_talonsMaster[talonIndex].configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 20, 25, 1.0));
+                m_talonsMaster[talonIndex].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
+            }
         }
 
         // Current Limit

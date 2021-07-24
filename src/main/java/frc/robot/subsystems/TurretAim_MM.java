@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -37,9 +38,9 @@ public class TurretAim_MM extends SubsystemBase {
     
     private TalonSRX _talon;
     private final double ENCODER_COUNTS_PER_DEG = 905;
-    private final double maxDegTravle = 250;
-    private final double minTarget = -35;
-    private final double maxTarget = minTarget + maxDegTravle;
+    private final double totalDegTravle = 250;
+    private final double minDeg = -35;
+    private final double maxDeg = minDeg + totalDegTravle;
 
     /**
     *
@@ -90,7 +91,9 @@ public class TurretAim_MM extends SubsystemBase {
         _talon.configMotionAcceleration(181733, Constants.kTimeoutMs);
 
         /* Zero the sensor once on robot boot up */
-        _talon.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+        //_talon.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+        _talon.configClearPositionOnLimitR(true, Constants.kTimeoutMs);
+        
 
     }
 
@@ -121,25 +124,25 @@ public class TurretAim_MM extends SubsystemBase {
     }
 
     private double clampTargetPos(double pos) {
-        if (pos > (maxTarget - 5)) {
-            return maxTarget;
-        } else if (pos < (minTarget + 5)) {
-            return minTarget;
+        if (pos > (maxDeg - 5)) {
+            return maxDeg;
+        } else if (pos < (minDeg + 5)) {
+            return minDeg;
         } else {
             return pos;
         }
     }
 
     public void my_SetPos(double sensorPos) {
-        _talon.setSelectedSensorPosition(sensorPos);
+        _talon.setSelectedSensorPosition((sensorPos  + minDeg) * ENCODER_COUNTS_PER_DEG);
     }
 
-    public void my_SetPos() {
-        _talon.setSelectedSensorPosition(minTarget * ENCODER_COUNTS_PER_DEG);
-    }
+    //public void my_SetPos() {
+    //    _talon.setSelectedSensorPosition(minDeg * ENCODER_COUNTS_PER_DEG);
+    //}
 
     public double get_currentPos() {
-        return get_My_CurrentRAW_Postion() / ENCODER_COUNTS_PER_DEG;
+        return (get_My_CurrentRAW_Postion() / ENCODER_COUNTS_PER_DEG) + minDeg;
     }
 
     private double get_My_CurrentRAW_Postion() {
@@ -147,11 +150,11 @@ public class TurretAim_MM extends SubsystemBase {
     }
 
     public double get_MaxPos() {
-        return maxTarget;
+        return maxDeg;
     }
 
     public double get_minPos() {
-        return minTarget;
+        return minDeg;
     }
 
 }
