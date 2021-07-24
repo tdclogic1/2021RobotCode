@@ -114,11 +114,11 @@ public class DriveTrain extends SubsystemBase {
     private boolean reportERROR_ONS = false;
 
     private boolean m_Craling = false;
-
+    private boolean m_isDemo = false;
     /**
     *
     */
-    public DriveTrain(boolean demo) {
+    public DriveTrain() {
 
         dBL_Sol_Shifter = new DoubleSolenoid(0, 4, 5);
         addChild("DBL_Sol_Shifter", dBL_Sol_Shifter);
@@ -152,7 +152,7 @@ public class DriveTrain extends SubsystemBase {
         // Current Limit
         for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
             /* enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s) */
-            if(demo){
+            if(m_isDemo){
                 m_talonsMaster[talonIndex].configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 10, 25, 1.0));
                 m_talonsMaster[talonIndex].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 5, 15, 0.5));
             }else{
@@ -164,10 +164,17 @@ public class DriveTrain extends SubsystemBase {
         // Current Limit
         for (talonIndex = 0; talonIndex < kMaxNumberOfFollowerMotors; talonIndex++) {
             /* enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s) */
-            m_talonsFollowers[talonIndex]
+            if(m_isDemo){
+                m_talonsFollowers[talonIndex]
+                        .configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 10, 25, 1.0));
+                m_talonsFollowers[talonIndex]
+                        .configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 5, 15, 0.5));
+            }else{
+                m_talonsFollowers[talonIndex]
                     .configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 20, 25, 1.0));
-            m_talonsFollowers[talonIndex]
+                m_talonsFollowers[talonIndex]
                     .configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
+            }
         }
 
         // set all Talon SRX encoder values to zero
@@ -250,6 +257,22 @@ public class DriveTrain extends SubsystemBase {
         }
 
         shiftHigh();
+    }
+    /**
+     * Set the Robot Demo Mode
+     * 
+     * @param isDemo
+     */
+    public void setRobotDemoMode(boolean isDemo){
+        m_isDemo = isDemo;
+    }
+
+    /**
+     * Returns true if Robot is in Demo Mode
+     * @return
+     */
+    public boolean getRobotDemoMode(){
+        return m_isDemo;
     }
 
     public void Toggle_Controlmode(){
@@ -517,6 +540,10 @@ public class DriveTrain extends SubsystemBase {
 
     private void driveCartesian(double xSpeed, double zRotation) {
         int talonIndex = 0;
+
+        if(m_isDemo){
+            
+        }
 
         //SmartDashboard.putNumber("xSpeed",xSpeed);
         //SmartDashboard.putNumber("xRotation", zRotation);
