@@ -194,7 +194,7 @@ public class RobotContainer {
     rt_xBox_Driver = new XboxControllerAxisButton(driverControlls, 3);
     rt_xBox_Driver.whileHeld(new IntakeEjectPowercell(m_intake), true);
 
-    lt_xBox_Driver = new XboxControllerAxisButton(driverControlls, XboxController.Axis.kLeftTrigger);
+    lt_xBox_Driver = new XboxControllerAxisButton(driverControlls, XboxController.Axis.kLeftTrigger.value);
     // lt_xBox_Driver;
 
     povNorth_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.NORTH);
@@ -255,10 +255,10 @@ public class RobotContainer {
     reset_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kBack.value);
     //reset_xBox_CoDriver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed));
 
-    rt_xBox_CoDriver = new XboxControllerAxisButton(coDriverControlls, 3);//XboxController.Axis.kRightTrigger);
+    rt_xBox_CoDriver = new XboxControllerAxisButton(coDriverControlls, XboxController.Axis.kRightTrigger.value);
     rt_xBox_CoDriver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed));
 
-    lt_xBox_CoDriver = new XboxControllerAxisButton(coDriverControlls, XboxController.Axis.kLeftTrigger);
+    lt_xBox_CoDriver = new XboxControllerAxisButton(coDriverControlls, XboxController.Axis.kLeftTrigger.value);
     // lt_xBox_CoDriver;
 
     povNorth_xBox_CoDriver = new XboxPOVButton(coDriverControlls, XboxPOVButton.NORTH);
