@@ -35,7 +35,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
  */
 public class TurretAim_MM extends SubsystemBase {
 
-    
+    private boolean ENABLE_FEILD_TRACKING = false;
     private TalonSRX _talon;
     private final double ENCODER_COUNTS_PER_DEG = 885;
     private final double RANGE = 250;
@@ -101,6 +101,9 @@ public class TurretAim_MM extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         SmartDashboard.putNumber("Turret Current Pos", get_currentPos());
+        if(getHomeSwitch()){
+            ENABLE_FEILD_TRACKING = true;
+        }
 
     }
 
@@ -118,9 +121,12 @@ public class TurretAim_MM extends SubsystemBase {
     }
 
     public void my_Aim_MotoionMagic(double targetPosDeg) {
-        double targetPos = applySetPointOFFSET(clampTargetPos(targetPosDeg)) * ENCODER_COUNTS_PER_DEG;
-        _talon.set(ControlMode.MotionMagic, targetPos);
-
+        if(ENABLE_FEILD_TRACKING){
+            double targetPos = applySetPointOFFSET(clampTargetPos(targetPosDeg)) * ENCODER_COUNTS_PER_DEG;
+            _talon.set(ControlMode.MotionMagic, targetPos);
+        }else{
+            DriverStation.reportWarning("Must Reference Turret", false);
+        }
     }
 
     private double clampTargetPos(double pos) {
