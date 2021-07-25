@@ -10,20 +10,23 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.FlyWheel_Vel_PID;
+import frc.robot.util.Utils;
 
 public class FlyWheel_Velocity extends CommandBase {
 
   private final FlyWheel_Vel_PID m_FlyWheel_Vel_PID;
 
   private final DoubleSupplier m_Setpoint;
+  private final DoubleSupplier m_trim;
 
   /** Creates a new FlyWheel_Vel_PID_Velocity. */
-  public FlyWheel_Velocity(FlyWheel_Vel_PID subsystem, DoubleSupplier setpoint) {
+  public FlyWheel_Velocity(FlyWheel_Vel_PID subsystem, DoubleSupplier setpoint, DoubleSupplier trim) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_FlyWheel_Vel_PID = subsystem;
     addRequirements(m_FlyWheel_Vel_PID);
 
     m_Setpoint = setpoint;
+    m_trim = trim;
   }
 
   // Called when the command is initially scheduled.
@@ -33,7 +36,7 @@ public class FlyWheel_Velocity extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double rpm = m_Setpoint.getAsDouble();
+    double rpm = m_Setpoint.getAsDouble() + Utils.scale(m_trim.getAsDouble(), -1, 1, -1000, 1000);
     m_FlyWheel_Vel_PID.my_FlyWheel_Vel_PIDVelocity(rpm);
   }
 

@@ -12,10 +12,13 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants;
 import frc.robot.commands.*;
+import frc.robot.util.Utils;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
+
+import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -46,6 +49,8 @@ public class DriveTrain extends SubsystemBase {
     private StringBuilder _sb = new StringBuilder();
     private int m_kPIDLoopIdx;
     private DoubleSolenoid dBL_Sol_Shifter;
+    private Value HIGHGEAR_VALUE = Value.kForward;
+    private Value LOWGEAR_VALUE = Value.kReverse;
     private WPI_TalonFX leftTalonMaster;
     private WPI_TalonFX leftTalonFollower1;
     private WPI_TalonFX leftTalonFollower2;
@@ -119,7 +124,13 @@ public class DriveTrain extends SubsystemBase {
     /**
     *
     */
-    public DriveTrain() {
+    private DoubleSupplier m_turnMultipier;
+
+    public DriveTrain(DoubleSupplier turnMultipier) {
+
+        m_turnMultipier = turnMultipier;
+
+        SmartDashboard.putNumber("Demo Speed", 0.1);
 
         dBL_Sol_Shifter = new DoubleSolenoid(0, 4, 5);
         addChild("DBL_Sol_Shifter", dBL_Sol_Shifter);
@@ -152,13 +163,19 @@ public class DriveTrain extends SubsystemBase {
 
         // Current Masters Limit
         for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
-            /* enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s) */
+            /**
+            * Configure the current limits that will be used
+            * Stator Current is the current that passes through the motor stators.
+            *  Use stator current limits to limit rotor acceleration/heat production
+            * Supply Current is the current that passes into the controller from the supply
+            *  Use supply current limits to prevent breakers from tripping 
+            *                                             enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s) */
             if(m_isDemo){
-                m_talonsMaster[talonIndex].configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 10, 25, 1.0));
+                //m_talonsMaster[talonIndex].configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 40, 50, 1.0));
                 m_talonsMaster[talonIndex].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 5, 15, 0.5));
             }else{
-                m_talonsMaster[talonIndex].configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 20, 25, 1.0));
-                m_talonsMaster[talonIndex].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
+                //m_talonsMaster[talonIndex].configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 40, 50, 1.0));
+                m_talonsMaster[talonIndex].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 45, 0.5));
             }
         }
 
@@ -261,7 +278,12 @@ public class DriveTrain extends SubsystemBase {
             setOpenLoopMode();
         }
 
-        shiftHigh();
+        if(m_isDemo){
+            my_shiftLow();
+        }else{
+            my_shiftHigh();
+        }
+        
     }
     /**
      * Set the Robot Demo Mode
@@ -302,9 +324,9 @@ public class DriveTrain extends SubsystemBase {
         DriverStation.reportError("Drive Train in Open Loop Mode", false);
     }
 
-    public void shiftHigh() {
+    public void my_shiftHigh() {
         DriverStation.reportWarning("Shift Highs Gear", false);
-        dBL_Sol_Shifter.set(Value.kReverse);
+        dBL_Sol_Shifter.set(HIGHGEAR_VALUE);
         m_maxWheelSpeed_Current = m_maxWheelSpeed_HighGear;
         rightTalonMaster.selectProfileSlot(0, 0);
         leftTalonMaster.selectProfileSlot(0, 0);
@@ -313,15 +335,25 @@ public class DriveTrain extends SubsystemBase {
         SmartDashboard.putBoolean("High Gear", true);
     }
 
-    public void shiftLow() {
+    public void my_shiftLow() {
         DriverStation.reportWarning("Shift Low Gear", false);
-        dBL_Sol_Shifter.set(Value.kForward);
+        dBL_Sol_Shifter.set(LOWGEAR_VALUE);
         m_maxWheelSpeed_Current = m_maxWheelSpeed_LowGear;
         rightTalonMaster.selectProfileSlot(1, 0);
         leftTalonMaster.selectProfileSlot(1, 0);
         m_kPIDLoopIdx = 1;
 
         SmartDashboard.putBoolean("High Gear", false);
+    }
+
+    public void my_ShiftToggle(){
+        if(my_GetIsCurrentGearHigh()){
+            System.out.println("vvvvvvvvv  LOW vvvvvvvvvvvvv");
+            my_shiftLow();
+        }else{
+            System.out.println("^^^^^^^^^^^  HIGH  ^^^^^^^^^^^^");
+            my_shiftHigh();
+        }
     }
 
     public void setWheelPIDF() {
@@ -427,6 +459,7 @@ public class DriveTrain extends SubsystemBase {
 
         if (my_GetIsCurrentGearHigh()) {
 
+           
             zRotation = zRotation * .2;// TURN_FACTOR;
 
         } else { // In low gear
@@ -460,8 +493,9 @@ public class DriveTrain extends SubsystemBase {
         }
 
         if(m_isDemo){
-            xSpeed=xSpeed*.5;
-            zRotation=zRotation*.75;
+            double demoSpeed = SmartDashboard.getNumber("Demo Speed", 0.1);
+            xSpeed=xSpeed * demoSpeed;
+            zRotation = zRotation * Utils.scale(m_turnMultipier.getAsDouble(), -1, 1, 0.1, 0.0);
         }
 
         driveCartesian(xSpeed, zRotation);
@@ -488,9 +522,8 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public boolean my_GetIsCurrentGearHigh() {
-        if (dBL_Sol_Shifter.get() == Value.kReverse) {
+        if (dBL_Sol_Shifter.get() == HIGHGEAR_VALUE) {
             return true;
-
         } else {
             return false;
         }
@@ -565,6 +598,7 @@ public class DriveTrain extends SubsystemBase {
         // set all Talon SRX encoder values to zero
         SmartDashboard.putNumber("Left talon", m_wheelSpeeds[kLeft]);
         SmartDashboard.putNumber("Right talon", m_wheelSpeeds[kRight]);
+        //System.out.println(m_closedLoopTalonFXMode);
         for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
             m_talonsMaster[talonIndex].set(m_closedLoopTalonFXMode, m_wheelSpeeds[talonIndex]);
             // m_talonsMaster[talonIndex].set(m_closedLoopTalonFXMode,

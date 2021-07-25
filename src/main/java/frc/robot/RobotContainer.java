@@ -102,17 +102,19 @@ public class RobotContainer {
 
   private static RobotContainer m_robotContainer = new RobotContainer();
 
+  // Joysticks
+  private final XboxController m_coDriverControlls = new XboxController(1);
+  private final XboxController m_driverControlls = new XboxController(0);
+  private final Joystick m_launchpad = new Joystick(2);
+
   // The robot's subsystems
   private final TurretFeed m_turretFeed = new TurretFeed();
   private final TurretAim_MM m_TurretAim_MM = new TurretAim_MM();
   private final FlyWheel_Vel_PID m_FlyWheel_Vel_PID = new FlyWheel_Vel_PID();
   private final Intake m_intake = new Intake();
-  private final DriveTrain m_driveTrain = new DriveTrain();
+  private final DriveTrain m_driveTrain = new DriveTrain(() -> m_launchpad.getRawAxis(1));
 
-  // Joysticks
-  private final XboxController coDriverControlls = new XboxController(1);
-  private final XboxController driverControlls = new XboxController(0);
-  private final Joystick launchpad = new Joystick(2);
+
 
   //Camera
   private final LimeLight limeLight1 = new LimeLight("limelight");
@@ -129,8 +131,8 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Configure default commands
-    m_driveTrain.setDefaultCommand(new DriveWithJoystick(m_driveTrain, driverControlls));
-    m_TurretAim_MM.setDefaultCommand(new Turret_Jog_MotionMagic(m_TurretAim_MM, () -> coDriverControlls.getRawAxis(0)));
+    m_driveTrain.setDefaultCommand(new DriveWithJoystick(m_driveTrain, m_driverControlls));
+    m_TurretAim_MM.setDefaultCommand(new Turret_Jog_MotionMagic(m_TurretAim_MM, () -> m_coDriverControlls.getRawAxis(0)));
 
     // Configure autonomous sendable chooser
 
@@ -160,134 +162,135 @@ public class RobotContainer {
 
   private void diverbuttons() {
 
-    a_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kA.value);
+    a_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kA.value);
     a_xBox_Driver.whenPressed(new IntakeExtend(m_intake), true);
 
-    b_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kB.value);
+    b_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kB.value);
     b_xBox_Driver.whenPressed(new IntakeRetract(m_intake), false);
 
-    x_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kX.value);
+    x_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kX.value);
     //x_xBox_Driver.whileHeld(new IntakePowercell(m_intake), true);
 
-    y_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kY.value);
+    y_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kY.value);
     //y_xBox_Driver
 
-    lb_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kBumperLeft.value);
+    lb_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kBumperLeft.value);
     //lb_xBox_Driver.whenPressed(new IntakeExtend(m_intake), true);
 
-    rb_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kBumperRight.value);
+    rb_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kBumperRight.value);
     rb_xBox_Driver.whileHeld(new IntakePowercell(m_intake), true);//whileHeld(new IntakeEjectPowercell(m_intake), true);
 
 
-    r_Stick_Button_xbox_Driver = new JoystickButton(driverControlls, XboxController.Button.kStickRight.value);
+    r_Stick_Button_xbox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kStickRight.value);
     // r_Stick_Button_xbox_Driver;
 
-    l_Stick_Button_xbox_Driver = new JoystickButton(driverControlls, XboxController.Button.kStickLeft.value);
-    // l_Stick_Button_xbox_Driver;
+    l_Stick_Button_xbox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kStickLeft.value);
+    l_Stick_Button_xbox_Driver.whenPressed(new DriveTrain_Toggle_Shifter(m_driveTrain));
 
-    start_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kStart.value);
+    start_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kStart.value);
     //start_xBox_Driver.whileHeld(new FlyWheel_Velocity(m_FlyWheel_Vel_PID, () -> SmartDashboard.getNumber("Fly Wheel Setpoint", 0)));
 
-    reset_xBox_Driver = new JoystickButton(driverControlls, XboxController.Button.kBack.value);
+    reset_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kBack.value);
     //reset_xBox_Driver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed));
 
-    rt_xBox_Driver = new XboxControllerAxisButton(driverControlls, 3);
+    rt_xBox_Driver = new XboxControllerAxisButton(m_driverControlls, 3);
     rt_xBox_Driver.whileHeld(new IntakeEjectPowercell(m_intake), true);
 
-    lt_xBox_Driver = new XboxControllerAxisButton(driverControlls, XboxController.Axis.kLeftTrigger.value);
+    lt_xBox_Driver = new XboxControllerAxisButton(m_driverControlls, XboxController.Axis.kLeftTrigger.value);
     // lt_xBox_Driver;
 
-    povNorth_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.NORTH);
+    povNorth_xBox_Driver = new XboxPOVButton(m_driverControlls, XboxPOVButton.NORTH);
     //povNorth_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> 180 ));
 
-    povNorthEast_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.NORTHEAST);
+    povNorthEast_xBox_Driver = new XboxPOVButton(m_driverControlls, XboxPOVButton.NORTHEAST);
     //povNorthEast_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> m_TurretAim_MM.get_MaxPos() ));
 
-    povNorthWest_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.NORTHWEST);
+    povNorthWest_xBox_Driver = new XboxPOVButton(m_driverControlls, XboxPOVButton.NORTHWEST);
     //povNorthWest_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> 90+45 ));
 
-    povSouth_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.SOUTH);
+    povSouth_xBox_Driver = new XboxPOVButton(m_driverControlls, XboxPOVButton.SOUTH);
     //povSouth_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM, () -> 0 ));
 
-    povSouthEast_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.SOUTHEAST);
+    povSouthEast_xBox_Driver = new XboxPOVButton(m_driverControlls, XboxPOVButton.SOUTHEAST);
     //povSouthEast_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> m_TurretAim_MM.get_minPos() ));
 
-    povSouthWest_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.SOUTHWEST);
+    povSouthWest_xBox_Driver = new XboxPOVButton(m_driverControlls, XboxPOVButton.SOUTHWEST);
     //povSouthWest_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> 45));
 
-    povWest_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.WEST);
+    povWest_xBox_Driver = new XboxPOVButton(m_driverControlls, XboxPOVButton.WEST);
     //povWest_xBox_Driver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> 90 ));
 
-    povEast_xBox_Driver = new XboxPOVButton(driverControlls, XboxPOVButton.EAST);
+    povEast_xBox_Driver = new XboxPOVButton(m_driverControlls, XboxPOVButton.EAST);
     // povEast_xBox_Driver;
 
   }
 
   private void codriverButtons() {
 
-    a_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kA.value);
-    //a_xBox_CoDriver.whileHeld(new Turret_Jog_MotionMagic(m_TurretAim_MM, () -> coDriverControlls.getRawAxis(0)));
+    a_xBox_CoDriver = new JoystickButton(m_coDriverControlls, XboxController.Button.kA.value);
+    //a_xBox_CoDriver.whileHeld(new Turret_Jog_MotionMagic(m_TurretAim_MM, () -> m_coDriverControlls.getRawAxis(0)));
 
-    b_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kB.value);
+    b_xBox_CoDriver = new JoystickButton(m_coDriverControlls, XboxController.Button.kB.value);
     //b_xBox_CoDriver.whenPressed(new IntakeRetract(m_intake), false);
 
-    x_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kX.value);
-    x_xBox_CoDriver.whileHeld(new FlyWheel_Velocity(m_FlyWheel_Vel_PID, () -> SmartDashboard.getNumber("Fly Wheel Setpoint", 0)));
+    x_xBox_CoDriver = new JoystickButton(m_coDriverControlls, XboxController.Button.kX.value);
+    //x_xBox_CoDriver.whileHeld(new FlyWheel_Velocity(m_FlyWheel_Vel_PID, () -> SmartDashboard.getNumber("Fly Wheel Setpoint", 0)));
+    x_xBox_CoDriver.whileHeld(new FlyWheel_Velocity(m_FlyWheel_Vel_PID, () -> SmartDashboard.getNumber("Fly Wheel Setpoint", 0), () -> m_launchpad.getRawAxis(0)));
 
-    y_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kY.value);
+    y_xBox_CoDriver = new JoystickButton(m_coDriverControlls, XboxController.Button.kY.value);
     //y_xBox_CoDriver.whileHeld(new IntakeEjectPowercell(m_intake), true);
 
-    lb_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kBumperLeft.value);
-    lb_xBox_CoDriver.whenPressed(new Turret_Jog_MotionMagic(m_TurretAim_MM, () -> coDriverControlls.getRawAxis(0)));
+    lb_xBox_CoDriver = new JoystickButton(m_coDriverControlls, XboxController.Button.kBumperLeft.value);
+    lb_xBox_CoDriver.whenPressed(new Turret_Jog_MotionMagic(m_TurretAim_MM, () -> m_coDriverControlls.getRawAxis(0)));
 
-    rb_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kBumperRight.value);
+    rb_xBox_CoDriver = new JoystickButton(m_coDriverControlls, XboxController.Button.kBumperRight.value);
     rb_xBox_CoDriver.whenPressed(new Turret_Vision_MotionMagic(m_TurretAim_MM, () -> m_driveTrain.getHeading(), limeLight1));
 
-    r_Stick_Button_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kStickRight.value);
+    r_Stick_Button_xBox_CoDriver = new JoystickButton(m_coDriverControlls, XboxController.Button.kStickRight.value);
     // r_Stick_Button_xBox_CoDriver;
 
-    l_Stick_Button_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kStickLeft.value);
+    l_Stick_Button_xBox_CoDriver = new JoystickButton(m_coDriverControlls, XboxController.Button.kStickLeft.value);
     // l_Stick_Button_xBox_CoDriver;
 
-    start_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kStart.value);
+    start_xBox_CoDriver = new JoystickButton(m_coDriverControlls, XboxController.Button.kStart.value);
     //start_xBox_CoDriver.whileHeld(new FlyWheel_Velocity(m_FlyWheel_Vel_PID, () -> SmartDashboard.getNumber("Fly Wheel Setpoint", 0)));
 
-    reset_xBox_CoDriver = new JoystickButton(coDriverControlls, XboxController.Button.kBack.value);
+    reset_xBox_CoDriver = new JoystickButton(m_coDriverControlls, XboxController.Button.kBack.value);
     //reset_xBox_CoDriver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed));
 
-    rt_xBox_CoDriver = new XboxControllerAxisButton(coDriverControlls, XboxController.Axis.kRightTrigger.value);
+    rt_xBox_CoDriver = new XboxControllerAxisButton(m_coDriverControlls, XboxController.Axis.kRightTrigger.value);
     rt_xBox_CoDriver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed));
 
-    lt_xBox_CoDriver = new XboxControllerAxisButton(coDriverControlls, XboxController.Axis.kLeftTrigger.value);
-    // lt_xBox_CoDriver;
+    lt_xBox_CoDriver = new XboxControllerAxisButton(m_coDriverControlls, XboxController.Axis.kLeftTrigger.value);
+    //);
 
-    povNorth_xBox_CoDriver = new XboxPOVButton(coDriverControlls, XboxPOVButton.NORTH);
+    povNorth_xBox_CoDriver = new XboxPOVButton(m_coDriverControlls, XboxPOVButton.NORTH);
     povNorth_xBox_CoDriver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> 180 ));
 
-    povNorthEast_xBox_CoDriver = new XboxPOVButton(coDriverControlls, XboxPOVButton.NORTHEAST);
+    povNorthEast_xBox_CoDriver = new XboxPOVButton(m_coDriverControlls, XboxPOVButton.NORTHEAST);
     povNorthEast_xBox_CoDriver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> m_TurretAim_MM.get_MaxPos() ));
 
-    povNorthWest_xBox_CoDriver = new XboxPOVButton(coDriverControlls, XboxPOVButton.NORTHWEST);
+    povNorthWest_xBox_CoDriver = new XboxPOVButton(m_coDriverControlls, XboxPOVButton.NORTHWEST);
     povNorthWest_xBox_CoDriver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> 90+45 ));
 
-    povSouth_xBox_CoDriver = new XboxPOVButton(coDriverControlls, XboxPOVButton.SOUTH);
+    povSouth_xBox_CoDriver = new XboxPOVButton(m_coDriverControlls, XboxPOVButton.SOUTH);
     povSouth_xBox_CoDriver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM, () -> 0 ));
 
-    povSouthEast_xBox_CoDriver = new XboxPOVButton(coDriverControlls, XboxPOVButton.SOUTHEAST);
+    povSouthEast_xBox_CoDriver = new XboxPOVButton(m_coDriverControlls, XboxPOVButton.SOUTHEAST);
     povSouthEast_xBox_CoDriver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> m_TurretAim_MM.get_minPos() ));
 
-    povSouthWest_xBox_CoDriver = new XboxPOVButton(coDriverControlls, XboxPOVButton.SOUTHWEST);
+    povSouthWest_xBox_CoDriver = new XboxPOVButton(m_coDriverControlls, XboxPOVButton.SOUTHWEST);
     povSouthWest_xBox_CoDriver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> 45));
 
-    povWest_xBox_CoDriver = new XboxPOVButton(coDriverControlls, XboxPOVButton.WEST);
+    povWest_xBox_CoDriver = new XboxPOVButton(m_coDriverControlls, XboxPOVButton.WEST);
     povWest_xBox_CoDriver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> 90 ));
 
-    povEast_xBox_CoDriver = new XboxPOVButton(coDriverControlls, XboxPOVButton.EAST);
+    povEast_xBox_CoDriver = new XboxPOVButton(m_coDriverControlls, XboxPOVButton.EAST);
     // povEast_xBox_CoDriver;
   }
 
   private void launchPadButtons() {
-    btn11_launchPad = new JoystickButton(launchpad, 11);
+    btn11_launchPad = new JoystickButton(m_launchpad, 11);
     btn11_launchPad.whileHeld(new Turret_Reference(m_TurretAim_MM));
 
   }
@@ -315,18 +318,18 @@ public class RobotContainer {
     SmartDashboard.putNumber("Fly Wheel Setpoint", 5000);
     SmartDashboard.putData("Reset Turt Pos", new Turret_Reset_Pos(m_TurretAim_MM));
 
-    SmartDashboard.putData("Jog Turret", new Turret_Jog_MotionMagic(m_TurretAim_MM, () -> driverControlls.getRawAxis(0)));
+    SmartDashboard.putData("Jog Turret", new Turret_Jog_MotionMagic(m_TurretAim_MM, () -> m_driverControlls.getRawAxis(0)));
 
     SmartDashboard.putData("Autonomous Command", new AutonomousCommand());
 
   }
 
   public XboxController getDriverControlls() {
-    return driverControlls;
+    return m_driverControlls;
   }
 
   public XboxController getCoDriverControlls() {
-    return coDriverControlls;
+    return m_coDriverControlls;
   }
 
   /**
