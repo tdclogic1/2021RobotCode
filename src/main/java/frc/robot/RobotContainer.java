@@ -287,9 +287,18 @@ public class RobotContainer {
   }
 
   private void launchPadButtons() {
+    btn11_launchPad = new JoystickButton(launchpad, 11);
+    btn11_launchPad.whileHeld(new Turret_Reference(m_TurretAim_MM));
+
   }
 
   private void SmartDashboardButtons() {
+
+    SmartDashboard.putData(m_turretFeed);
+    SmartDashboard.putData(m_TurretAim_MM);
+    SmartDashboard.putData(m_FlyWheel_Vel_PID);
+    SmartDashboard.putData(m_intake);
+    SmartDashboard.putData(m_driveTrain);
 
 
     SmartDashboard.putData("Drive Train Loop Mod Toggle", new DriveTrain_Toggle_Controlmode(m_driveTrain));

@@ -37,10 +37,10 @@ public class TurretAim_MM extends SubsystemBase {
 
     
     private TalonSRX _talon;
-    private final double ENCODER_COUNTS_PER_DEG = 905;
-    private final double totalDegTravle = 250;
-    private final double minDeg = -35;
-    private final double maxDeg = minDeg + totalDegTravle;
+    private final double ENCODER_COUNTS_PER_DEG = 885;
+    private final double RANGE = 250;
+    private final double OFFSET = -37;
+    private final double MAXSETPOINT = OFFSET + RANGE;
 
     /**
     *
@@ -118,31 +118,33 @@ public class TurretAim_MM extends SubsystemBase {
     }
 
     public void my_Aim_MotoionMagic(double targetPosDeg) {
-        double targetPos = clampTargetPos(targetPosDeg) * ENCODER_COUNTS_PER_DEG;
+        double targetPos = applySetPointOFFSET(clampTargetPos(targetPosDeg)) * ENCODER_COUNTS_PER_DEG;
         _talon.set(ControlMode.MotionMagic, targetPos);
 
     }
 
     private double clampTargetPos(double pos) {
-        if (pos > (maxDeg - 5)) {
-            return maxDeg;
-        } else if (pos < (minDeg + 5)) {
-            return minDeg;
+        if (pos > (MAXSETPOINT - 5)) {
+            System.out.println("****************CLAMPING*********************");
+            return MAXSETPOINT;
+        } else if (pos < (OFFSET + 5)) {
+            System.out.println("**************  clamping *********************");
+            return OFFSET;
         } else {
             return pos;
         }
     }
 
     public void my_SetPos(double sensorPos) {
-        _talon.setSelectedSensorPosition((sensorPos  + minDeg) * ENCODER_COUNTS_PER_DEG);
+        _talon.setSelectedSensorPosition((sensorPos  + OFFSET) * ENCODER_COUNTS_PER_DEG);
     }
 
     //public void my_SetPos() {
-    //    _talon.setSelectedSensorPosition(minDeg * ENCODER_COUNTS_PER_DEG);
+    //    _talon.setSelectedSensorPosition(OFFSET * ENCODER_COUNTS_PER_DEG);
     //}
 
     public double get_currentPos() {
-        return (get_My_CurrentRAW_Postion() / ENCODER_COUNTS_PER_DEG) + minDeg;
+        return (get_My_CurrentRAW_Postion() / ENCODER_COUNTS_PER_DEG) + OFFSET;
     }
 
     private double get_My_CurrentRAW_Postion() {
@@ -150,11 +152,29 @@ public class TurretAim_MM extends SubsystemBase {
     }
 
     public double get_MaxPos() {
-        return maxDeg;
+        return MAXSETPOINT;
     }
 
     public double get_minPos() {
-        return minDeg;
+        return OFFSET;
     }
+
+    /**
+     * Applies the Offset the Requested Position
+     * @param setpoint
+     * @return
+     */
+    private double applySetPointOFFSET(double setpoint){
+        return setpoint - OFFSET;
+    }
+
+	public boolean getHomeSwitch() {
+        if(_talon.isRevLimitSwitchClosed()==1){
+            return true;
+        }else{
+            return false;
+        }
+		
+	}
 
 }

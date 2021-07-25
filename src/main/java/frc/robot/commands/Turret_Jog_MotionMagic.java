@@ -33,10 +33,11 @@ public class Turret_Jog_MotionMagic extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double joystick = deadband(m_jograte.getAsDouble());
-    m_Setpoint = get_Jog_Setpoint(joystick);	
 
-    SmartDashboard.putNumber("Jog joystick", joystick);
+    double jograte = deadband(m_jograte.getAsDouble());
+    m_Setpoint = get_Jog_Setpoint(jograte);	
+
+    SmartDashboard.putNumber("Jog jograte", jograte);
     SmartDashboard.putNumber("Jog Setpoint", m_Setpoint);
     m_TurretAim_MM.my_Aim_MotoionMagic(m_Setpoint);
   }
@@ -55,23 +56,23 @@ public class Turret_Jog_MotionMagic extends CommandBase {
     return false;
   }
 
-  private double get_Jog_Setpoint(double setpoint){
+  private double get_Jog_Setpoint(double jograte){
    
     double maxStep = 5;  
 
-    m_Setpoint = (m_TurretAim_MM.get_currentPos() + (setpoint * maxStep));
+    m_Setpoint = (m_TurretAim_MM.get_currentPos() + (jograte * maxStep));
     
     if(m_Setpoint > m_TurretAim_MM.get_MaxPos( )){
-      return  m_TurretAim_MM.get_MaxPos( );
+        return  m_TurretAim_MM.get_MaxPos( );
     }else if(m_Setpoint < m_TurretAim_MM.get_minPos( )){
-      return m_TurretAim_MM.get_minPos( );
+        return m_TurretAim_MM.get_minPos( );
     }else{
-      return m_Setpoint;
+        return m_Setpoint;
     }
   }
 
   private double deadband(double setpoint){
-    double deadband = .2;
+    double deadband = .3;
     if(Math.abs(setpoint)<deadband){
       return 0.0;
     }else{

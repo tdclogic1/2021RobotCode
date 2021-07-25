@@ -37,7 +37,7 @@ public class Intake extends SubsystemBase {
     public Intake() {
 
 
-        //compressor = new Compressor(0);
+        compressor = new Compressor(0);
         //compressor.stop();
 
         doubleSolenoid1 = new DoubleSolenoid(0, 3, 2);

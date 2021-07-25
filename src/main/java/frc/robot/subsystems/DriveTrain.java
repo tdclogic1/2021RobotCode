@@ -101,7 +101,8 @@ public class DriveTrain extends SubsystemBase {
     private double m_encoderUnitsPerRev = 2048;
 
     // Ramp rates in Seconds
-    private double m_closedLoopRamp_sec = .25;
+    private double m_closedLoopRamp_sec = .15;
+    private double m_closedLoopRamp_Demo_sec = .25;
     private double m_openLoopRamp_sec = 0.0;
 
     // **************************************
@@ -114,7 +115,7 @@ public class DriveTrain extends SubsystemBase {
     private boolean reportERROR_ONS = false;
 
     private boolean m_Craling = false;
-    private boolean m_isDemo = false;
+    private boolean m_isDemo = true;
     /**
     *
     */
@@ -149,7 +150,7 @@ public class DriveTrain extends SubsystemBase {
         m_talonsFollowers[2] = rightTalonFollower1;
         m_talonsFollowers[3] = rightTalonFollower2;
 
-        // Current Limit
+        // Current Masters Limit
         for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
             /* enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s) */
             if(m_isDemo){
@@ -161,7 +162,7 @@ public class DriveTrain extends SubsystemBase {
             }
         }
 
-        // Current Limit
+        // Current Followers Limit
         for (talonIndex = 0; talonIndex < kMaxNumberOfFollowerMotors; talonIndex++) {
             /* enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s) */
             if(m_isDemo){
@@ -177,17 +178,17 @@ public class DriveTrain extends SubsystemBase {
             }
         }
 
-        // set all Talon SRX encoder values to zero
-        for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
-            // m_talonsMaster[talonIndex].setPosition(0);
-            m_talonsMaster[talonIndex].setSelectedSensorPosition(0, 0, Constants.kTimeoutMs);
-        }
-
         // set all the Talon feedback Devices
         for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
             // m_talonsMaster[talonIndex].setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
             m_talonsMaster[talonIndex].configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
                     Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+        }
+
+        // set all Talon SRX encoder values to zero
+        for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
+            // m_talonsMaster[talonIndex].setPosition(0);
+            m_talonsMaster[talonIndex].setSelectedSensorPosition(0, 0, Constants.kTimeoutMs);
         }
 
         // Configure Nominal Output Voltage
@@ -204,13 +205,13 @@ public class DriveTrain extends SubsystemBase {
             m_talonsMaster[talonIndex].configPeakOutputReverse(-1, Constants.kTimeoutMs);
         }
 
-        // put all Talon SRX into brake mode
+        // put all Talon masters into brake mode
         for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
             m_talonsMaster[talonIndex].setNeutralMode(NeutralMode.Coast);
 
         }
 
-        // put all Talon SRX into brake mode
+        // put all Talon Followers into brake mode
         for (talonIndex = 0; talonIndex < kMaxNumberOfFollowerMotors; talonIndex++) {
             m_talonsFollowers[talonIndex].setNeutralMode(NeutralMode.Coast);
 
@@ -220,13 +221,17 @@ public class DriveTrain extends SubsystemBase {
         if (m_useVoltageRamp) {
             for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
                 // m_talonsMaster[talonIndex].setVoltageRampRate(m_voltageRampRate);
-                m_talonsMaster[talonIndex].configClosedloopRamp(m_closedLoopRamp_sec, Constants.kTimeoutMs);
+                m_talonsMaster[talonIndex].configClosedloopRamp(0, Constants.kTimeoutMs);
+                //if(m_isDemo){
+                 //   m_talonsMaster[talonIndex].configClosedloopRamp(m_closedLoopRamp_Demo_sec, Constants.kTimeoutMs);
+                //}else{
+                  //  m_talonsMaster[talonIndex].configClosedloopRamp(m_closedLoopRamp_sec, Constants.kTimeoutMs);
+                //}
             }
         } else {
             // clear all voltage ramp rates
             for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
-                // m_talonsMaster[talonIndex].setVoltageRampRate(0.0);
-                m_talonsMaster[talonIndex].configClosedloopRamp(m_openLoopRamp_sec, Constants.kTimeoutMs);
+                m_talonsMaster[talonIndex].configOpenloopRamp(0);
             }
         }
 
@@ -331,7 +336,7 @@ public class DriveTrain extends SubsystemBase {
         double wheelD_LowGear = 0.0;
         double wheelF_LowGear = 1023.0 / 20660.0;
 
-        double wheelP_MotionMagic = 0.3;// 0.5;
+        double wheelP_MotionMagic = 0.0;// 0.5;
         double wheelI_MotionMagic = 0.0;
         double wheelD_MotionMagic = 0.0;
         double wheelF_MotionMagic = 1023.0 / 20660.0;
@@ -454,6 +459,11 @@ public class DriveTrain extends SubsystemBase {
             }
         }
 
+        if(m_isDemo){
+            xSpeed=xSpeed*.5;
+            zRotation=zRotation*.75;
+        }
+
         driveCartesian(xSpeed, zRotation);
         // differentialDrive1.arcadeDrive(-xSpeed, zRotation);
     }
@@ -541,10 +551,6 @@ public class DriveTrain extends SubsystemBase {
     private void driveCartesian(double xSpeed, double zRotation) {
         int talonIndex = 0;
 
-        if(m_isDemo){
-            
-        }
-
         //SmartDashboard.putNumber("xSpeed",xSpeed);
         //SmartDashboard.putNumber("xRotation", zRotation);
 
@@ -557,8 +563,8 @@ public class DriveTrain extends SubsystemBase {
         // want to do all the sets immediately after one another to minimize
         // delay between commands
         // set all Talon SRX encoder values to zero
-        //SmartDashboard.putNumber("Left talon", m_wheelSpeeds[kLeft]);
-        //SmartDashboard.putNumber("Right talon", m_wheelSpeeds[kRight]);
+        SmartDashboard.putNumber("Left talon", m_wheelSpeeds[kLeft]);
+        SmartDashboard.putNumber("Right talon", m_wheelSpeeds[kRight]);
         for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
             m_talonsMaster[talonIndex].set(m_closedLoopTalonFXMode, m_wheelSpeeds[talonIndex]);
             // m_talonsMaster[talonIndex].set(m_closedLoopTalonFXMode,
