@@ -9,11 +9,13 @@ import frc.robot.subsystems.TurretFeed;
 
 public class Turret_Cycle_PowerCells extends CommandBase {
   private final TurretFeed m_turretFeed;
+  private final Boolean m_feedForward;
 
   /** Creates a new Turret_Cycle_PowerCells. */
-  public Turret_Cycle_PowerCells(TurretFeed subsystem) {
+  public Turret_Cycle_PowerCells(TurretFeed subsystem, boolean feedforward) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turretFeed = subsystem;
+    m_feedForward = feedforward;
     addRequirements(m_turretFeed);
   }
 
@@ -24,8 +26,13 @@ public class Turret_Cycle_PowerCells extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_turretFeed.my_IndexerRun(.75);
-    m_turretFeed.my_AgitatorRun(.2);
+    if(m_feedForward){
+      m_turretFeed.my_IndexerRun(.75);
+      m_turretFeed.my_AgitatorRun(.2);
+    }else{
+      m_turretFeed.my_IndexerRun(-.75);
+      m_turretFeed.my_AgitatorRun(-.2);
+    }
   }
 
   // Called once the command ends or is interrupted.

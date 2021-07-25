@@ -259,10 +259,10 @@ public class RobotContainer {
     //reset_xBox_CoDriver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed));
 
     rt_xBox_CoDriver = new XboxControllerAxisButton(m_coDriverControlls, XboxController.Axis.kRightTrigger.value);
-    rt_xBox_CoDriver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed));
+    rt_xBox_CoDriver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed, true));
 
     lt_xBox_CoDriver = new XboxControllerAxisButton(m_coDriverControlls, XboxController.Axis.kLeftTrigger.value);
-    //);
+    //lt_xBox_CoDriver.whileHeld(new Turret_Reverse_PowerCells(m_turretFeed));
 
     povNorth_xBox_CoDriver = new XboxPOVButton(m_coDriverControlls, XboxPOVButton.NORTH);
     povNorth_xBox_CoDriver.whileHeld(new Turret_To_Setpoint_MotionMagic(m_TurretAim_MM,() -> 180 ));
@@ -292,6 +292,9 @@ public class RobotContainer {
   private void launchPadButtons() {
     btn11_launchPad = new JoystickButton(m_launchpad, 11);
     btn11_launchPad.whileHeld(new Turret_Reference(m_TurretAim_MM));
+
+    btn6_launchPad = new JoystickButton(m_launchpad, 6);
+    btn6_launchPad.whileHeld(new Turret_Reverse_PowerCells(m_turretFeed, m_FlyWheel_Vel_PID));
 
   }
 

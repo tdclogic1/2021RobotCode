@@ -10,6 +10,8 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -22,14 +24,14 @@ public class FlyWheel_Run extends CommandBase {
 
     private final FlyWheel_Vel_PID m_FlyWheel_Vel_PID;
 
-    private final XboxController m_controller;
+    private final DoubleSupplier m_percentOut;
 
-    public FlyWheel_Run(FlyWheel_Vel_PID subsystem, XboxController controller) {
+    public FlyWheel_Run(FlyWheel_Vel_PID subsystem, DoubleSupplier percentOut) {
 
         m_FlyWheel_Vel_PID = subsystem;
         addRequirements(m_FlyWheel_Vel_PID);
 
-        m_controller = controller;
+        m_percentOut = percentOut;
     }
 
     // Called when the command is initially scheduled.
@@ -40,7 +42,7 @@ public class FlyWheel_Run extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double speed = m_controller.getRawAxis(3);
+        double speed = m_percentOut.getAsDouble();//m_controller.getRawAxis(3);
         m_FlyWheel_Vel_PID.my_FlyWheel_Vel_PIDPercentOutput(speed);
 
     }
