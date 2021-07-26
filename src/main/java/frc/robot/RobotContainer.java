@@ -241,10 +241,10 @@ public class RobotContainer {
     //y_xBox_CoDriver.whileHeld(new IntakeEjectPowercell(m_intake), true);
 
     lb_xBox_CoDriver = new JoystickButton(m_coDriverControlls, XboxController.Button.kBumperLeft.value);
-    lb_xBox_CoDriver.whenPressed(new Turret_Jog_MotionMagic(m_TurretAim_MM, () -> m_coDriverControlls.getRawAxis(0)));
+    //lb_xBox_CoDriver.whenPressed(new Turret_Jog_MotionMagic(m_TurretAim_MM, () -> m_coDriverControlls.getRawAxis(0)));
 
     rb_xBox_CoDriver = new JoystickButton(m_coDriverControlls, XboxController.Button.kBumperRight.value);
-    rb_xBox_CoDriver.whenPressed(new Turret_Vision_MotionMagic(m_TurretAim_MM, () -> m_driveTrain.getHeading(), limeLight1));
+    //rb_xBox_CoDriver.whenPressed(new Turret_Vision_MotionMagic(m_TurretAim_MM, () -> m_driveTrain.getHeading(), limeLight1));
 
     r_Stick_Button_xBox_CoDriver = new JoystickButton(m_coDriverControlls, XboxController.Button.kStickRight.value);
     // r_Stick_Button_xBox_CoDriver;
@@ -295,6 +295,9 @@ public class RobotContainer {
 
     btn6_launchPad = new JoystickButton(m_launchpad, 6);
     btn6_launchPad.whileHeld(new Turret_Reverse_PowerCells(m_turretFeed, m_FlyWheel_Vel_PID));
+
+    btn10_launchPad = new JoystickButton(m_launchpad, 10);
+    btn10_launchPad.whileHeld(new Turret_Vision_MotionMagic(m_TurretAim_MM, () -> m_driveTrain.getHeading(), limeLight1));
 
   }
 
