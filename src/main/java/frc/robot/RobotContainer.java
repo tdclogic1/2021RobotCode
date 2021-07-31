@@ -338,6 +338,14 @@ public class RobotContainer {
     return m_coDriverControlls;
   }
 
+  public Joystick getlaunchPad() {
+    return m_launchpad;
+  }
+
+  public boolean getIsGyroReady(){
+    return m_driveTrain.get_my_Gyro_IsReady();
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

@@ -581,6 +581,14 @@ public class DriveTrain extends SubsystemBase {
         resetHeadingGyro();
     }
 
+    public boolean get_my_Gyro_IsReady(){
+		if(_pidgey.getState().value == 2){
+			return true;
+		}else{
+			return false;
+		}
+	 }
+
     private void driveCartesian(double xSpeed, double zRotation) {
         int talonIndex = 0;
 

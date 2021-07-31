@@ -13,9 +13,11 @@ package frc.robot;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.DriveTrain;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -71,8 +73,44 @@ public class Robot extends TimedRobot {
     public void disabledInit() {
     }
 
+    // Disabled variables
+    private Integer scancount = 0;
+    private Integer sequence = 0;
+    private Integer count = 0;
+    private Joystick lp;
+
     @Override
     public void disabledPeriodic() {
+
+        // Scheduler.getInstance().run();
+        // updateSmartDashboard();
+
+        lp = m_robotContainer.getlaunchPad();
+        boolean isGyroReady = m_robotContainer.getIsGyroReady();
+
+        scancount = scancount + 1;
+        if (isGyroReady){
+            
+            lp.setOutputs(sequence);
+        }else{
+            lp.setOutputs(1);
+        }
+		
+		if (scancount > 10){
+        	sequence = sequence<<1;
+        	scancount = 0;
+            count = count +1;           
+
+        }
+
+		if (count == 11){
+        	sequence = sequence+1;
+        	count = 0;
+        	//Test SmartDashboar Send the current AutoChoice
+        	//autonomousSelected = autonomousChooser.getSelected().toString();
+        	//Put the selected name on the smartdashboard
+            //SmartDashboard.putString("Auto Choice", autonomousSelected);
+        }
     }
 
     /**
@@ -87,6 +125,7 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
         }
+        lp.setOutputs(0);
     }
 
     /**
@@ -105,6 +144,7 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
+        lp.setOutputs(0);
     }
 
     /**
