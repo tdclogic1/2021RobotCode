@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class TurretFeed extends SubsystemBase {
 
@@ -15,9 +16,9 @@ public class TurretFeed extends SubsystemBase {
 
   /** Creates a new TurretFeed. */
   public TurretFeed() {
-    motorAgitator = new WPI_VictorSPX(7);
+    motorAgitator = new WPI_VictorSPX(Constants.kCAN_TurretAgitator);
 
-    motorIndexer = new WPI_VictorSPX(9);
+    motorIndexer = new WPI_VictorSPX(Constants.kCAN_TurretIndexer);
   }
 
   @Override

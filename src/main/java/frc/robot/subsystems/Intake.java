@@ -10,6 +10,7 @@
 
 package frc.robot.subsystems;
 
+import frc.robot.Constants;
 import frc.robot.commands.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,13 +38,13 @@ public class Intake extends SubsystemBase {
     public Intake() {
 
 
-        compressor = new Compressor(0);
+        //compressor = new Compressor(Constants.kCAN_PCM);
         //compressor.stop();
 
-        doubleSolenoid1 = new DoubleSolenoid(0, 3, 2);
+        doubleSolenoid1 = new DoubleSolenoid(0, Constants.kPSOL_Intake_Ext, Constants.kPSOL_Intake_Ret);
         addChild("Double Solenoid 1", doubleSolenoid1);
 
-        motor = new WPI_VictorSPX(6);
+        motor = new WPI_VictorSPX(Constants.kCAN_IntakeRoller);
 
     }
 

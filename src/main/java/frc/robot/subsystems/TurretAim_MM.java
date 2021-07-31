@@ -49,7 +49,7 @@ public class TurretAim_MM extends SubsystemBase {
 
       
 
-        _talon = new WPI_TalonSRX(5);
+        _talon = new WPI_TalonSRX(Constants.kCAN_TurretSpin);
 
         /* Factory default hardware to prevent unexpected behavior */
         _talon.configFactoryDefault();

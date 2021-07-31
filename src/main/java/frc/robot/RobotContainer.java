@@ -193,7 +193,7 @@ public class RobotContainer {
     reset_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kBack.value);
     //reset_xBox_Driver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed));
 
-    rt_xBox_Driver = new XboxControllerAxisButton(m_driverControlls, 3);
+    rt_xBox_Driver = new XboxControllerAxisButton(m_driverControlls, XboxController.Axis.kRightTrigger.value);
     rt_xBox_Driver.whileHeld(new IntakeEjectPowercell(m_intake), true);
 
     lt_xBox_Driver = new XboxControllerAxisButton(m_driverControlls, XboxController.Axis.kLeftTrigger.value);

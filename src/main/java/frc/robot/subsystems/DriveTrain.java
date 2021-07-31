@@ -59,7 +59,7 @@ public class DriveTrain extends SubsystemBase {
     private WPI_TalonFX rightTalonFollower2;
 
     private PigeonIMU pigeonIMU1;
-    private PigeonIMU _pidgey = new PigeonIMU(0);
+    private PigeonIMU _pidgey = new PigeonIMU(Constants.kCAN_Pigeon);
     private double[] xyz_dps = new double[3];
     private double currentAngle = 0;
     private boolean angleIsGood = false;
@@ -132,21 +132,21 @@ public class DriveTrain extends SubsystemBase {
 
         SmartDashboard.putNumber("Demo Speed", 0.1);
 
-        dBL_Sol_Shifter = new DoubleSolenoid(0, 4, 5);
+        dBL_Sol_Shifter = new DoubleSolenoid(0, Constants.kPSOL_DriveShift_High, Constants.kPSOL_DriveShift_Low);
         addChild("DBL_Sol_Shifter", dBL_Sol_Shifter);
 
-        leftTalonMaster = new WPI_TalonFX(13);
+        leftTalonMaster = new WPI_TalonFX(Constants.kCAN_DriveLeft1);
         leftTalonMaster.configFactoryDefault();
-        leftTalonFollower1 = new WPI_TalonFX(14);
+        leftTalonFollower1 = new WPI_TalonFX(Constants.kCAN_DriveLeft2);
         leftTalonFollower1.configFactoryDefault();
-        leftTalonFollower2 = new WPI_TalonFX(15);
+        leftTalonFollower2 = new WPI_TalonFX(Constants.kCAN_DriveLeft3);
         leftTalonFollower2.configFactoryDefault();
 
-        rightTalonMaster = new WPI_TalonFX(0);
+        rightTalonMaster = new WPI_TalonFX(Constants.kCAN_DriveRight1);
         rightTalonMaster.configFactoryDefault();
-        rightTalonFollower1 = new WPI_TalonFX(1);
+        rightTalonFollower1 = new WPI_TalonFX(Constants.kCAN_DriveRight2);
         rightTalonFollower1.configFactoryDefault();
-        rightTalonFollower2 = new WPI_TalonFX(2);
+        rightTalonFollower2 = new WPI_TalonFX(Constants.kCAN_DriveRight3);
         rightTalonFollower2.configFactoryDefault();
 
         int talonIndex = 0;

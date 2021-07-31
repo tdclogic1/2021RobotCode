@@ -11,6 +11,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.commands.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -61,8 +62,8 @@ public class FlyWheel_Vel_PID extends SubsystemBase {
     */
     public FlyWheel_Vel_PID() {
 
-        motorFlyWheel_Vel_PIDMaster = new TalonFX(12);
-        motorFlyWheel_Vel_PIDSlave = new TalonFX(3);
+        motorFlyWheel_Vel_PIDMaster = new TalonFX(Constants.kCAN_TurretMaster);
+        motorFlyWheel_Vel_PIDSlave = new TalonFX(Constants.kCAN_TurretSlave);
 
         /* Factory Default all hardware to prevent unexpected behaviour */
         motorFlyWheel_Vel_PIDMaster.configFactoryDefault();

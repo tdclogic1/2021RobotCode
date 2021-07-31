@@ -40,4 +40,27 @@ public class Constants {
 	 * report to DS if action fails.
 	 */
 	public static final int kTimeoutMs = 30;
+
+	public static final int kCAN_IntakeRoller = 5;
+	public static final int kCAN_TurretAgitator = 6;
+	public static final int kCAN_TurretIndexer = 7;
+	public static final int kCAN_TurretSlave = 3;
+	public static final int kCAN_TurretMaster = 12;
+	public static final int kCAN_TurretSpin = 10;
+	public static final int kCAN_DriveLeft1 = 15;
+	public static final int kCAN_DriveLeft2 = 14;
+	public static final int kCAN_DriveLeft3 = 13;
+	public static final int kCAN_DriveRight1 = 0;
+	public static final int kCAN_DriveRight2 = 1;
+	public static final int kCAN_DriveRight3 = 2;
+	public static final int kCAN_Pigeon = 0;
+	public static final int kCAN_PCM = 0;
+	public static final int kCAN_PDP = 0;
+
+	public static final int kPSOL_Intake_Ext = 1;
+	public static final int kPSOL_Intake_Ret = 0;
+	public static final int kPSOL_DriveShift_High = 2;
+	public static final int kPSOL_DriveShift_Low = 3;
+
+
 }
