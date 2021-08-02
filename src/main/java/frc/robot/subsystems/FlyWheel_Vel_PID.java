@@ -80,8 +80,8 @@ public class FlyWheel_Vel_PID extends SubsystemBase {
         motorFlyWheel_Vel_PIDSlave.setNeutralMode(NeutralMode.Coast);
 
         /* Invert if required */
-        motorFlyWheel_Vel_PIDMaster.setInverted(true);
-        motorFlyWheel_Vel_PIDSlave.setInverted(false);
+        motorFlyWheel_Vel_PIDMaster.setInverted(false);
+        motorFlyWheel_Vel_PIDSlave.setInverted(true);
 
         /* Set Slave to Follow Master */
         motorFlyWheel_Vel_PIDSlave.follow(motorFlyWheel_Vel_PIDMaster);
@@ -141,6 +141,7 @@ public class FlyWheel_Vel_PID extends SubsystemBase {
     public void my_FlyWheel_Vel_PIDVelocity(double rpm) {
         targetVelocity_UnitsPer100ms = rpm * velocityUnitsper100ms;
         motorFlyWheel_Vel_PIDMaster.set(TalonFXControlMode.Velocity, targetVelocity_UnitsPer100ms);
+        SmartDashboard.putNumber("Fly Wheel Output", rpm);
         diagnostics();
     }
 
