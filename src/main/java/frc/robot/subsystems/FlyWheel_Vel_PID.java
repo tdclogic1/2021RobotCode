@@ -175,4 +175,13 @@ public class FlyWheel_Vel_PID extends SubsystemBase {
         /* Reset built string */
         _sb.setLength(0);
     }
+
+    public boolean getatspeed(){
+        if(motorFlyWheel_Vel_PIDMaster.getSelectedSensorVelocity(kPIDLoopIdx)>16000){
+            //SmartDashboard.putNumber("PID Out", motorFlyWheel_Vel_PIDMaster.getSelectedSensorVelocity(kPIDLoopIdx));
+            return true;
+        }else{
+            return false;
+        }
+        }
 }

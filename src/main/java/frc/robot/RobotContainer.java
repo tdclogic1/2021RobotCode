@@ -12,7 +12,9 @@ package frc.robot;
 
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
+import frc.robot.util.AndJoystickButton;
 import frc.robot.util.JoystickPOVButton;
+import frc.robot.util.OrJoystickButton;
 import frc.robot.util.XboxControllerAxisButton;
 import frc.robot.util.XboxPOVButton;
 import oi.limelightvision.limelight.frc.LimeLight;
@@ -43,6 +45,7 @@ public class RobotContainer {
   private JoystickButton lb_xBox_Driver;
   private JoystickButton rb_xBox_Driver;
   private JoystickButton r_Stick_Button_xbox_Driver;
+  private AndJoystickButton land_Stick_Button_xbox_Driver;
   private JoystickButton l_Stick_Button_xbox_Driver;
   private JoystickButton start_xBox_Driver;
   private JoystickButton reset_xBox_Driver;
@@ -171,6 +174,7 @@ public class RobotContainer {
     x_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kX.value);
     //x_xBox_Driver.whileHeld(new IntakePowercell(m_intake), true);
 
+
     y_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kY.value);
     //y_xBox_Driver
 
@@ -185,7 +189,11 @@ public class RobotContainer {
     // r_Stick_Button_xbox_Driver;
 
     l_Stick_Button_xbox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kStickLeft.value);
-    l_Stick_Button_xbox_Driver.whenPressed(new DriveTrain_Toggle_Shifter(m_driveTrain));
+    //l_Stick_Button_xbox_Driver.whenPressed(new DriveTrain_Toggle_Shifter(m_driveTrain));
+    l_Stick_Button_xbox_Driver.whenPressed(new DriveTrain_Shift_Low(m_driveTrain));
+
+    land_Stick_Button_xbox_Driver = new AndJoystickButton(m_driverControlls, XboxController.Button.kStickLeft.value,m_launchpad,7);
+    land_Stick_Button_xbox_Driver.whenPressed(new DriveTrain_Shift_High(m_driveTrain));
 
     start_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kStart.value);
     //start_xBox_Driver.whileHeld(new FlyWheel_Velocity(m_FlyWheel_Vel_PID, () -> SmartDashboard.getNumber("Fly Wheel Setpoint", 0)));
@@ -259,7 +267,7 @@ public class RobotContainer {
     //reset_xBox_CoDriver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed));
 
     rt_xBox_CoDriver = new XboxControllerAxisButton(m_coDriverControlls, XboxController.Axis.kRightTrigger.value);
-    rt_xBox_CoDriver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed, true));
+    rt_xBox_CoDriver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed, () -> m_FlyWheel_Vel_PID.getatspeed() , true));
 
     lt_xBox_CoDriver = new XboxControllerAxisButton(m_coDriverControlls, XboxController.Axis.kLeftTrigger.value);
     //lt_xBox_CoDriver.whileHeld(new Turret_Reverse_PowerCells(m_turretFeed));
@@ -321,7 +329,7 @@ public class RobotContainer {
 
     SmartDashboard.putData("Reset Gyro", new DriveTrain_Reset_Gyro(m_driveTrain));
 
-    SmartDashboard.putNumber("Fly Wheel Setpoint", 5000);
+    SmartDashboard.putNumber("Fly Wheel Setpoint", 5400);
     SmartDashboard.putData("Reset Turt Pos", new Turret_Reset_Pos(m_TurretAim_MM));
 
     SmartDashboard.putData("Jog Turret", new Turret_Jog_MotionMagic(m_TurretAim_MM, () -> m_driverControlls.getRawAxis(0)));

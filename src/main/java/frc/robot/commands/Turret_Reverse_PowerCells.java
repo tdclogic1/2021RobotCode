@@ -16,6 +16,6 @@ public class Turret_Reverse_PowerCells extends ParallelCommandGroup {
   public Turret_Reverse_PowerCells(TurretFeed turretFeed, FlyWheel_Vel_PID flyWheel_Vel_PID) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new Turret_Cycle_PowerCells(turretFeed,false), new FlyWheel_Run(flyWheel_Vel_PID, () -> -0.2));
+    addCommands(new Turret_Cycle_PowerCells(turretFeed,() -> true,false), new FlyWheel_Run(flyWheel_Vel_PID, () -> -0.2));
   }
 }

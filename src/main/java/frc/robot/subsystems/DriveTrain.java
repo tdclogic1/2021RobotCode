@@ -115,7 +115,7 @@ public class DriveTrain extends SubsystemBase {
     // ************************************** */
     private boolean m_preserveHeading_Enable = true;
     private int m_preserveHeading_Iterations = 50;// 5 Original Driver Didn't like the snappy action
-    private double kP_preserveHeading_Telepo = 0.005; // 0.025; Original Driver Didn't like the snappy action
+    private double kP_preserveHeading_Telepo = 0.025; // 0.025; Original Driver Didn't like the snappy action
     private double kP_preserveHeading_Auto = 0.025; // 0.025
     private boolean reportERROR_ONS = false;
 
@@ -130,7 +130,7 @@ public class DriveTrain extends SubsystemBase {
 
         m_turnMultipier = turnMultipier;
 
-        SmartDashboard.putNumber("Demo Speed", 0.1);
+        SmartDashboard.putNumber("Demo Speed", 0.3);
 
         dBL_Sol_Shifter = new DoubleSolenoid(0, Constants.kPSOL_DriveShift_High, Constants.kPSOL_DriveShift_Low);
         addChild("DBL_Sol_Shifter", dBL_Sol_Shifter);
@@ -170,29 +170,29 @@ public class DriveTrain extends SubsystemBase {
             * Supply Current is the current that passes into the controller from the supply
             *  Use supply current limits to prevent breakers from tripping 
             *                                             enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s) */
-            if(m_isDemo){
+            //if(m_isDemo){
+            //    m_talonsMaster[talonIndex].configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 60, 80, 1.0));
+                //m_talonsMaster[talonIndex].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 5, 15, 0.5));
+            //}else{
                 //m_talonsMaster[talonIndex].configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 40, 50, 1.0));
-                m_talonsMaster[talonIndex].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 5, 15, 0.5));
-            }else{
-                //m_talonsMaster[talonIndex].configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 40, 50, 1.0));
-                m_talonsMaster[talonIndex].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 45, 0.5));
-            }
+                m_talonsMaster[talonIndex].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 50, 0.5));
+            //}
         }
 
         // Current Followers Limit
         for (talonIndex = 0; talonIndex < kMaxNumberOfFollowerMotors; talonIndex++) {
             /* enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s) */
-            if(m_isDemo){
+            //if(m_isDemo){
+            //    m_talonsFollowers[talonIndex]
+            //            .configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 60, 80, 1.0));
+            //    m_talonsFollowers[talonIndex]
+            //            .configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 60, 80, 0.5));
+            //}else{
                 m_talonsFollowers[talonIndex]
-                        .configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 10, 25, 1.0));
+                    .configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 40, 50, 1.0));
                 m_talonsFollowers[talonIndex]
-                        .configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 5, 15, 0.5));
-            }else{
-                m_talonsFollowers[talonIndex]
-                    .configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 20, 25, 1.0));
-                m_talonsFollowers[talonIndex]
-                    .configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
-            }
+                    .configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 50, 0.5));
+            //}
         }
 
         // set all the Talon feedback Devices
@@ -224,13 +224,15 @@ public class DriveTrain extends SubsystemBase {
 
         // put all Talon masters into brake mode
         for (talonIndex = 0; talonIndex < kMaxNumberOfMasterMotors; talonIndex++) {
-            m_talonsMaster[talonIndex].setNeutralMode(NeutralMode.Coast);
+            //m_talonsMaster[talonIndex].setNeutralMode(NeutralMode.Coast);
+            m_talonsMaster[talonIndex].setNeutralMode(NeutralMode.Brake);
 
         }
 
         // put all Talon Followers into brake mode
         for (talonIndex = 0; talonIndex < kMaxNumberOfFollowerMotors; talonIndex++) {
-            m_talonsFollowers[talonIndex].setNeutralMode(NeutralMode.Coast);
+            //m_talonsFollowers[talonIndex].setNeutralMode(NeutralMode.Coast);
+            m_talonsFollowers[talonIndex].setNeutralMode(NeutralMode.Brake);
 
         }
 
@@ -363,7 +365,7 @@ public class DriveTrain extends SubsystemBase {
         double wheelD_HighGear = 0.0;
         double wheelF_HighGear = 1023.0 / 20660.0;
 
-        double wheelP_LowGear = 0.0;// 1.5;
+        double wheelP_LowGear = .05;// 1.5;
         double wheelI_LowGear = 0.0;
         double wheelD_LowGear = 0.0;
         double wheelF_LowGear = 1023.0 / 20660.0;
@@ -460,7 +462,7 @@ public class DriveTrain extends SubsystemBase {
         if (my_GetIsCurrentGearHigh()) {
 
            
-            zRotation = zRotation * .2;// TURN_FACTOR;
+            zRotation = zRotation * 1;// TURN_FACTOR;
 
         } else { // In low gear
 
@@ -492,11 +494,11 @@ public class DriveTrain extends SubsystemBase {
             }
         }
 
-        if(m_isDemo){
-            double demoSpeed = SmartDashboard.getNumber("Demo Speed", 0.1);
+        //if(m_isDemo){
+            double demoSpeed = SmartDashboard.getNumber("Demo Speed", 0.3);
             xSpeed=xSpeed * demoSpeed;
             zRotation = zRotation * Utils.scale(m_turnMultipier.getAsDouble(), -1, 1, 0.1, 0.0);
-        }
+        //}
 
         driveCartesian(xSpeed, zRotation);
         // differentialDrive1.arcadeDrive(-xSpeed, zRotation);

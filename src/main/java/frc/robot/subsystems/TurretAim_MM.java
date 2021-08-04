@@ -131,10 +131,10 @@ public class TurretAim_MM extends SubsystemBase {
 
     private double clampTargetPos(double pos) {
         if (pos > (MAXSETPOINT - 5)) {
-            System.out.println("****************CLAMPING*********************");
+            //System.out.println("****************CLAMPING*********************");
             return MAXSETPOINT;
         } else if (pos < (OFFSET + 5)) {
-            System.out.println("**************  clamping *********************");
+            //System.out.println("**************  clamping *********************");
             return OFFSET;
         } else {
             return pos;
