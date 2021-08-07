@@ -172,6 +172,7 @@ public class RobotContainer {
     b_xBox_Driver.whenPressed(new IntakeRetract(m_intake), false);
 
     x_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kX.value);
+    x_xBox_Driver.whileHeld(new FlyWheel_Velocity(m_FlyWheel_Vel_PID, () -> SmartDashboard.getNumber("Fly Wheel Setpoint", 0), () -> m_launchpad.getRawAxis(0)));
     //x_xBox_Driver.whileHeld(new IntakePowercell(m_intake), true);
 
 
@@ -179,7 +180,7 @@ public class RobotContainer {
     //y_xBox_Driver
 
     lb_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kBumperLeft.value);
-    //lb_xBox_Driver.whenPressed(new IntakeExtend(m_intake), true);
+    lb_xBox_Driver.whileHeld(new IntakeEjectPowercell(m_intake), true);
 
     rb_xBox_Driver = new JoystickButton(m_driverControlls, XboxController.Button.kBumperRight.value);
     rb_xBox_Driver.whileHeld(new IntakePowercell(m_intake), true);//whileHeld(new IntakeEjectPowercell(m_intake), true);
@@ -202,9 +203,10 @@ public class RobotContainer {
     //reset_xBox_Driver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed));
 
     rt_xBox_Driver = new XboxControllerAxisButton(m_driverControlls, XboxController.Axis.kRightTrigger.value);
-    rt_xBox_Driver.whileHeld(new IntakeEjectPowercell(m_intake), true);
+    rt_xBox_Driver.whileHeld(new Turret_Cycle_PowerCells(m_turretFeed, () -> m_FlyWheel_Vel_PID.getatspeed() , true));
 
     lt_xBox_Driver = new XboxControllerAxisButton(m_driverControlls, XboxController.Axis.kLeftTrigger.value);
+    //lt_xBox_Driver.whileHeld(new IntakeEjectPowercell(m_intake), true);
     // lt_xBox_Driver;
 
     povNorth_xBox_Driver = new XboxPOVButton(m_driverControlls, XboxPOVButton.NORTH);

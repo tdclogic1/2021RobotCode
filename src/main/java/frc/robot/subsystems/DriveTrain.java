@@ -497,7 +497,7 @@ public class DriveTrain extends SubsystemBase {
         //if(m_isDemo){
             double demoSpeed = SmartDashboard.getNumber("Demo Speed", 0.3);
             xSpeed=xSpeed * demoSpeed;
-            zRotation = zRotation * Utils.scale(m_turnMultipier.getAsDouble(), -1, 1, 0.1, 0.0);
+            zRotation = zRotation * Utils.scale(m_turnMultipier.getAsDouble(), -1, 1, 0.3, 0.0);
         //}
 
         driveCartesian(xSpeed, zRotation);
