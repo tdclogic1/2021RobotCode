@@ -188,8 +188,8 @@ public class DriveTrain extends SubsystemBase {
             //    m_talonsFollowers[talonIndex]
             //            .configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 60, 80, 0.5));
             //}else{
-                m_talonsFollowers[talonIndex]
-                    .configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 40, 50, 1.0));
+                //m_talonsFollowers[talonIndex]
+                  //  .configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 40, 50, 1.0));
                 m_talonsFollowers[talonIndex]
                     .configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 50, 0.5));
             //}

@@ -300,6 +300,10 @@ public class RobotContainer {
   }
 
   private void launchPadButtons() {
+
+    btn2_launchPad = new JoystickButton(m_launchpad, 2);
+    btn2_launchPad.whileHeld(new Turret_Feed_juggle(m_turretFeed));
+    
     btn11_launchPad = new JoystickButton(m_launchpad, 11);
     btn11_launchPad.whileHeld(new Turret_Reference(m_TurretAim_MM));
 

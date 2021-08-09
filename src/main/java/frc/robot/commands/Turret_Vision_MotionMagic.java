@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
@@ -21,6 +22,7 @@ public class Turret_Vision_MotionMagic extends CommandBase {
   private DoubleSupplier m_gyroAngle;
   private double m_iterationsSinceLostTarget = 0;
   private final double m_LostTarget_Iterations = 10;
+  private PIDController m_TargetTracker;
 
   public Turret_Vision_MotionMagic(TurretAim_MM subsystem, DoubleSupplier gyroAngle, LimeLight limeLight) {
 
@@ -29,6 +31,10 @@ public class Turret_Vision_MotionMagic extends CommandBase {
     addRequirements(m_TurretAim_MM);
     m_gyroAngle = gyroAngle;
     m_limeLight = limeLight;
+
+    m_TargetTracker = new PIDController(.9, 0.01, 1);
+    //m_TargetTracker.setIntegratorRange(minimumIntegral, maximumIntegral);
+    
   }
 
   // Called when the command is initially scheduled.
@@ -47,7 +53,10 @@ public class Turret_Vision_MotionMagic extends CommandBase {
     double kp = .9;
 
     if (m_limeLight.getIsTargetFound()) {
-      m_Setpoint = get_Jog_Setpoint(m_limeLight.getdegRotationToTarget() * kp);
+
+      m_Setpoint = m_TargetTracker.calculate(m_limeLight.getdegRotationToTarget(), 0);
+      //m_Setpoint = get_Jog_Setpoint(m_limeLight.getdegRotationToTarget() * kp);
+
       m_TurretAim_MM.my_Aim_MotoionMagic(m_Setpoint);
       m_iterationsSinceLostTarget = 0;
     } else {
